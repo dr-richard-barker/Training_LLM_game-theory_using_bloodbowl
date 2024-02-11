@@ -189,6 +189,9 @@ This Human team showcases the race's adaptability and balanced approach to the g
 
 **Wood Elf team name:**
 
+![Alt text](/Images/Dalle4_wood_elf)
+
+
 Designing a Wood Elf Blood Bowl team emphasizes their exceptional agility, speed, and ball-handling skills, making them one of the most dynamic and mobile teams on the pitch. Here's a detailed breakdown of a Wood Elf team, with their roles, special moves, cool traits, numerical attributes for speed, agility, strength, and toughness, and a brief description of their type of defense:
 
 | Name               | Role            | Special Moves                 | Cool Traits                        | Speed | Agility | Strength | Toughness | Type of Defense       |
