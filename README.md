@@ -112,6 +112,8 @@ This lineup of the Undead team highlights their blend of brute strength, tactica
 
 **Orc team name:**
 
+![Alt text](/Images/Dalle4_orc)
+
 Creating a rival Orc team to face off against the Halflings involves showcasing the Orcs' characteristic blend of brute strength and surprising agility in some positions. Here's how an Orc Blood Bowl team could be structured, complete with their roles, special moves, cool traits, and numerical attributes for speed, agility, strength, and toughness, plus a minimal description of their type of defense:
 
 
