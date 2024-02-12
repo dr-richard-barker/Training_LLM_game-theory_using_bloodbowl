@@ -263,6 +263,47 @@ Creating a table of fantastical star players for a Blood Bowl-like setting, incl
 These star players bring a high-fantasy element to the game, each with their unique abilities and strategies that can dramatically alter the flow of play. From aerial assaults and magical barrages to unstoppable charges and tactical dives, they add depth and excitement to the traditional Blood Bowl gameplay.
 
 
+# Probability in the game (Role dice or use AI to role for for?)
+
+
+Below: tables for "special moves" and "cool traits" and a column summarizing dice roll interaction and changes in probability that helps to quantify their effects on gameplay, making it clearer how each move or trait influences the game's mechanics:
+
+### Special Moves Table
+
+| Special Move      | Description                                       | Dice Role Interaction and Probability Change         |
+|-------------------|---------------------------------------------------|------------------------------------------------------|
+| Dodge             | Increases evasion ability                         | Allows re-roll of failed dodge attempts              |
+| Throw Team-Mate   | Enables throwing smaller players across the field | Success based on strength check; failure can result in player landing mishap |
+| Block             | Improves resistance to being knocked down        | Adds a re-roll or favorable modifier to block attempts |
+| Pass              | Enhances throw accuracy                           | Adds a bonus to pass attempts, reducing failure chance |
+| Catch             | Improves likelihood of catching the ball         | Provides re-roll or bonus for catch attempts         |
+| Sure Hands        | Reduces fumbling on pickups                      | Negates the need for a re-roll on pickup failures; may automatically succeed on a certain roll |
+| Mighty Blow       | Increases chance of injuring an opponent         | Adds a modifier to injury rolls, increasing severity of outcomes |
+| Regeneration      | Allows recovery from injuries                    | On injury, roll a die; on a successful roll, the player may return to the game |
+| Sprint            | Extends movement range                           | Allows additional movement beyond normal limit, no extra dice roll required |
+| Side Step         | Player chooses where they are pushed back to     | Affects positioning without a direct dice roll but alters opponent's pushback options |
+
+
+### Cool Traits Table
+
+
+| Cool Trait                | Description                              | Dice Role Interaction and Probability Change            |
+|---------------------------|------------------------------------------|---------------------------------------------------------|
+| Unbelievable Luck         | Allows re-rolling unfavorable outcomes   | Grants one re-roll per game or reduces penalty in specific situations |
+| Expert at Sneaking Past Defenses | Increased chance to bypass tackle zones | Modifies or negates opponent's tackle zone effects for one action |
+| Master Tactician          | Provides team-wide bonus or strategic options | May allow a strategic play once per game that ignores or modifies normal rule constraints |
+| Fearsome Presence         | Reduces effectiveness of nearby opponents | Opponents within a certain radius may have a penalty on their actions |
+| Can Cook a Mean Stew Mid-Game | Boosts team morale                      | Temporarily improves team stats or recovery rates, possibly through a morale roll |
+| Intimidating Presence     | Increases chance of opponents failing actions | Opponents have a penalty on actions or must re-roll successful actions within a certain radius |
+
+
+These tables synthesize the game's mechanics, offering clear insights into how each special move and cool trait directly impacts the outcomes of actions through dice rolls and probability changes. This structured approach not only aids in understanding and balancing gameplay but also enriches the strategic depth available to players.
+
+---
+
+
+
+
  
 
 
