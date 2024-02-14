@@ -151,6 +151,7 @@ This Orc team combines raw power with a dash of cunning, courtesy of their Gobli
 ---
 
 **Human team name:**
+!(Human team)[Images/DALL·E 2024-02-11 12.17.35 - The human Blood Bowl team trains on a traditional field, marked by its pristine condition and professional layout, reflective of the disciplined appro.webp]
 
 Crafting a Human Blood Bowl team to rival the Halflings emphasizes the humans' balanced approach to the game, blending speed, agility, and strength in a versatile lineup. Here's a detailed breakdown of a Human team, featuring their roles, special moves, cool traits, and numerical attributes, along with a brief description of their defensive style:
 
