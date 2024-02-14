@@ -9,6 +9,7 @@ Enjoy the process of bringing your Halflings to life with your painting!
 ![halfling](/Images/BB0FAF03-2FAC-4732-BC66-F70138500D99.jpeg)
 
 
+
 ### 1. **Base Layering**
 - **Brown Base:** Start with a brown base over a black undercoat, this will nicely define the shadows and lower areas, giving your miniature depth right from the beginning.
 - **Green:** Apply a mid-tone green to areas you want to highlight as clothing. This green should not be too bright initially, as you will build up to the brighter greens with layering.
@@ -260,6 +261,7 @@ Continuing with the theme of using household or easily accessible items for enha
 
 Each of these items opens up a world of creative possibilities for customizing your miniatures, allowing you to create unique, detailed, and personalized models for your Blood Bowl team. Remember, the key to effective use of these materials is imagination, experimentation, and a bit of patience to see how you can transform everyday objects into parts of your miniature world.
 
+![halfling after game](/Images/6324BEFE-3202-4426-99D2-015EB5BC9160.webp)
 
 
 Creating a thematic and detailed environment for Halfling miniatures in Blood Bowl can be particularly fun given their rich lore and characteristics. Here are ten specific creative uses of household or easily accessible items to enhance your Halfling models:
