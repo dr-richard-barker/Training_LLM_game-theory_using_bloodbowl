@@ -1,10 +1,16 @@
+# Making and painting your halfling team
+
 To create a vibrant and detailed halfling color scheme on your models try the following plan.
 Master model painting is as much about patience and practice as it is about technique. 
 Take your time with each step, allowing layers to dry fully before proceeding. 
 Enjoy the process of bringing your Halflings to life with your painting!
 
+
+![halfling](/Images/BB0FAF03-2FAC-4732-BC66-F70138500D99.jpeg)
+
+
 ### 1. **Base Layering**
-- **Brown Base:** Since you've started with a brown base over a black undercoat, this will nicely define the shadows and lower areas, giving your miniature depth right from the beginning.
+- **Brown Base:** Start with a brown base over a black undercoat, this will nicely define the shadows and lower areas, giving your miniature depth right from the beginning.
 - **Green:** Apply a mid-tone green to areas you want to highlight as clothing. This green should not be too bright initially, as you will build up to the brighter greens with layering.
 - **Yellow:** For areas you wish to be yellow, start with a darker, mustard-like yellow. This will serve as a good base for brighter layers on top.
 
