@@ -1,5 +1,7 @@
 
-Halfling Star Players with Unusual Mounts:
+## Halfling Star Players with Unusual Mounts:
+
+![Alt text](/Images/balloon_rider.jpeg)
 
 
 Here's the information converted into a table format:
@@ -11,11 +13,13 @@ Here's the information converted into a table format:
 | Hamfast "Mudstomper" Mudfoot   | Halfling  | Block, Dodge     | Fearless            | Hippo           | 2     | 2       | 5        | 5         | Strength-based (hippo assistance)| Lineman      |
 | Barnabas "High Flyer" Bumblebrook | Halfling  | Catch, Pass      | Showman            | Hot Air Balloon | 4     | 4       | 3        | 2         | Evasive (mobility and height)    | Catcher      |
 
-This table provides a structured overview of Halfling star players with unusual mounts, outlining their species, skills, cool traits, animal mounts, and key attributes such as speed, agility, strength, toughness, defense type, and primary role in the game.
+This table provides a structured overview of Halfling star players with unusual mounts, outlining their species, skills, cool traits, animal mounts, and key attributes such as speed, agility, strength, toughness, defence type, and primary role in the game.
 
 **Additional notes**
 
 Pip's speed is boosted by his lema mount, making him a fast blitzer.
 Beatrice's duck mount provides some agility but is relatively fragile.
-Hamfast relies on his hippo's strength and bulk for his defense.
+Hamfast relies on his hippo's strength and bulk for his defence.
 Barnabas' hot air balloon grants him unique mobility and aerial advantages.
+
+![Alt text](/Images/Rabit_rider.webp)
