@@ -4,25 +4,26 @@ Blood Bowl combines strategic movement, dice rolling, and player abilities to cr
 
 **Movement:**
 
-* **Mounts affect movement:** Your Halfling players move according to their own speed stat, but their mounts can modify this. For example, Pip's lema increases his movement, while Hamfast's hippo makes him slower.
-* **Mounts require activation:** Mounts act as separate entities that you need to activate and move each turn. They can perform basic actions like walking, but their specific abilities might differ.
-* **Terrain interaction:** Consider how mounts navigate obstacles. Can the lema jump over rocks? Can the hippo wade through water? 
+* **Mounts affect movement:** Your Halfling players move according to their own speed stat, but their mounts can modify this. For example, Pip's lema increases his movement, Hamfast's hippo makes him slower and the duck allows Barnabas to fly almost anyware on the field.
+* **Mounts require activation:** Mounts act as separate entities that you need to activate and move each turn. They can perform basic actions like walking, but their specific abilities might differ. Discuss the probabilty of the hippo going bazerka, the lema jumping other the opposition linesmen, the geese laying a easter egg or hot air balloon sprinjng a leak?!
+* **Terrain interaction:** Consider how mounts navigate obstacles. Can the lema jump over rocks? Can the hippo wade through water? what about going near the oppositions end zone.
 
 **Dice Rolling:**
 
-* **Actions require rolls:** When your Halfling or their mount attempts an action (moving, dodging, blocking, etc.), you roll dice to determine success.
-* **Attribute modifiers:** Your player's relevant stat (Strength, Agility, etc.) and any applicable skills modify the dice roll, making success more or less likely.
-* **Mount assistance:** Some mounts may offer bonuses to certain rolls. Maybe the duck helps with catches, or the hippo adds power to blocks.
+* **Actions require rolls:** When your Halfling or their mount attempts an action (moving, dodging, blocking, etc.), you roll dice to determine success. The game usually uses D6 dice, but if you have alternatives such as a 10 or 12 sided dice then feel free to incorporate but make sure you dicuss the probability requirements with your opposition.
+* **Attribute modifiers:** Your player's relevant stat (Strength, Agility, etc.) and any applicable skills modify the dice roll, making success more or less likely (see tables below for examples)
+* **Mount assistance:** Some mounts may offer bonuses to certain rolls. Maybe the duck or lema helps with catches, the hippo adds power to blocks, and/or the balloon can fly over opposition.
 
 **Decision-Making:**
 
-* **Evaluate options:** Consider your player's stats, opponent positions, and available actions before rolling the dice. 
+* **Evaluate options:** Consider your player's stats, opponent positions, and available actions before rolling the dice (this is the core principle of the game). 
 * **Risk vs. reward:** Some actions, like blitzing, offer high rewards but carry higher risks of failure.
 * **Think creatively:** How can you utilize your unusual mounts to gain an advantage? Can the lema outmaneuver opponents? Can the hippo create blocking opportunities?
 
 **Tables for Probability and Dice Values:**
 
-Unfortunately, Blood Bowl doesn't use simple probabilities for actions. The outcome depends on several factors:
+Unfortunately, Blood Bowl doesn't use simple probabilities for actions. 
+The outcome depends on several factors and potential modifiers (creativity and story telling are key here):
 
 * **Dice type:** Different actions use different dice (D6, D8, etc.), each with their own number of success symbols.
 * **Attribute modifiers:** Your player's stats add or subtract from the target number needed for success.
