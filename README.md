@@ -1,27 +1,27 @@
-# Training how to use game theory using the warhammer game known as "Blood bowl"
+# Training how to use game theory using the Warhammer game known as "Blood Bowl"
 
 We will explore the use of LLM’s to design and assist with the preparation of teams and creation of the characteristers required to play board game. 
 This training is written from the perspective of a halfling team manager to help intergrate the blood bowl gaming narratives into the tutorial.
 
-## A plan and visualise a blood ball game between a halfling, undead and a few other teams
+## A plan and visualise a blood ball game between a halfling and undead team (& a few other teams to provide the context of the rest of the league)
 
 Planning and visualising a Blood Bowl game between a Halfling and Undead team involves understanding the key characteristics and strategies of both teams, as well as creating a vivid image of the clash on the pitch. Here's how we can break it down:
 
 # Understanding the Teams (life vs death)
-Halfling Team: Known for their agility and surprising resilience, Halflings are underdogs in Blood Bowl. They rely on their Treemen to provide muscle and throwing capability, while the Halflings themselves excel at dodging and unexpected plays. Their game strategy often involves avoiding direct confrontations and using their mobility to outmaneuver opponents.
-Undead Team: The Undead bring a mix of speed (from Ghouls and Wights) and brute strength (from Mummies). They can absorb punishment and keep coming, thanks to Regeneration and a generally sturdy lineup. Their strategy can be more straightforward, using their strength and resilience to dominate the field and control the ball with their faster units.
+Halfling Team: Known for their agility and surprising resilience, Halflings are underdogs in Blood Bowl. They rely on their Treemen to provide muscle and throwing capability, while the Halflings themselves excel at dodging and unexpected plays. Their game strategy often involves avoiding direct confrontations and using their mobility to outmanoeuvre opponents.
+Undead Team: The Undead bring a mix of speed (from Ghouls and Wights) and brute strength (from Mummies). Thanks to Regeneration and a generally sturdy lineup, they can absorb punishment and keep coming. Their strategy can be more straightforward, using their strength and resilience to dominate the field and control the ball with their faster units.
 
 **Planning the Game**
 Setting: The game takes place in a classic Blood Bowl stadium, adorned with fans of both teams. The atmosphere is electric, with Halfling fans cooking up a feast in the stands, and Undead fans... eerily silent.
 
-**Kickoff:** The Halflings will aim to use their Treemen to secure the ball and make quick passes until the treeman can make enough space to thow a halfling catcher who's holding the ball over the Undead's heavy hitting defencisve line. The Undead, on the other hand, will try to use their Mummies to break through the Halfling line and disrupt their play.
+**Kickoff:** The Halflings will aim to use their Treemen to secure the ball and make quick passes until the treeman can make enough space to throw a halfling catcher who's holding the ball over the Undead's heavy hitting defensive line. The Undead, on the other hand, will try to use their Mummies to break through the Halfling line and disrupt their play.
 
 **Mid-Game:** Halflings will need to exploit any gaps they can find, using their agility to slip through Undead lines. The Undead will focus on controlling the pitch, using their Ghouls to chase down the ball and Wights to block Halfling movements.
 
 **Endgame:** If the Halflings manage to stay clear of the Undead's grasp, they could pull off a surprise win with a swift touchdown. The Undead team will rely on grinding down the Halflings and securing the ball for a slow, relentless advance towards the Halfling end zone.
 
 
-![Alt text](/Images/759F6B7E-FBE9-4833-9B6F-1E196257A0A0.JPG)
+![Halfling team](/Images/759F6B7E-FBE9-4833-9B6F-1E196257A0A0.JPG)
 
 
 **Visualising the Game**
@@ -70,7 +70,7 @@ This enhanced breakdown gives a clearer picture of how each Halfling team member
 
 **Undead team name: Chariots of death.**
 
-![Alt text](/Images/Dalle4_test)
+![Undead team](/Images/Dalle4_test)
 
 
 For the Undead team rivaling the living team, let's create a lineup that showcases their unique strengths and styles, complete with numerical attributes for speed, agility, strength, and toughness, as well as a brief description of their type of defense:
@@ -112,7 +112,7 @@ This lineup of the Undead team highlights their blend of brute strength, tactica
 
 **Orc team name:**
 
-![Alt text](/Images/Dalle4_orc)
+![Orc team](/Images/Dalle4_orc)
 
 Creating a rival Orc team to face off against the Halflings involves showcasing the Orcs' characteristic blend of brute strength and surprising agility in some positions. Here's how an Orc Blood Bowl team could be structured, complete with their roles, special moves, cool traits, and numerical attributes for speed, agility, strength, and toughness, plus a minimal description of their type of defense:
 
