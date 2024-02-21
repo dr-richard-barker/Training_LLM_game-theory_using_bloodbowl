@@ -23,3 +23,23 @@ Hamfast relies on his hippo's strength and bulk for his defence.
 Barnabas' hot air balloon grants him unique mobility and aerial advantages.
 
 ![Alt text](/Images/Rabit_rider.webp)
+
+
+
+## Wood Elf Star players
+
+**Now for the wood elf team**
+
+
+Here are four potential Wood Elf star players to complement your Wood Elf team:
+
+| Name                             | Species     | Skills                    | Cool Trait                | Animal Mount    | Speed | Agility | Strength | Toughness | Defense Type                 | Primary Role   |
+|----------------------------------|-------------|---------------------------|---------------------------|-----------------|-------|---------|----------|-----------|------------------------------|----------------|
+| Aelarion "Skyhunter" Windrider   | Wood Elf    | Pass, Leap                | Aerial Acrobat            | Giant Eagle     | 7     | 5       | 3        | 3         | Evasive (aerial mobility)    | Thrower        |
+| Tauron "Rootwall" Oakheart       | Treeman     | Mighty Blow, Stand Firm   | Nature's Guardian         | -               | 2     | 1       | 6        | 9         | Immovable (physical presence)| Lineman        |
+| Elendil "Swiftfoot" Greenbough   | Wood Elf    | Dodge, Sprint             | Fleet of Foot             | -               | 8     | 4       | 2        | 2         | Evasive (speed and agility)  | Catcher        |
+| Galadriel "Moonshadow" Starbreeze| Wood Elf    | Dodge, Leap               | Ethereal Grace            | -               | 7     | 5       | 3        | 3         | Evasive (agility and stealth)| Blitzer        |
+| Faelan "Branchbender" Willowborn | Wood Elf    | Block, Tackle             | Unyielding                | -               | 6     | 4       | 3        | 3         | Balanced (strength and agility)| Blitzer       |
+
+This table introduces a balanced mix of Wood Elf star players, each with their own unique skills, traits, and roles within the team. Aelarion "Skyhunter" Windrider, with his Giant Eagle mount, provides aerial support and mobility, while Tauron "Rootwall" Oakheart, the Treeman, serves as a formidable physical presence on the field. Elendil "Swiftfoot" Greenbough and Galadriel "Moonshadow" Starbreeze offer speed and agility, with Faelan "Branchbender" Willowborn adding strength and tactical prowess to the lineup. Together, these star players create a versatile and dynamic Wood Elf team ready to take on the challenges of Blood Bowl.
+
