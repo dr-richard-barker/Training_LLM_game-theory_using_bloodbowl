@@ -43,3 +43,21 @@ Here are four potential Wood Elf star players to complement your Wood Elf team:
 
 This table introduces a balanced mix of Wood Elf star players, each with their own unique skills, traits, and roles within the team. Aelarion "Skyhunter" Windrider, with his Giant Eagle mount, provides aerial support and mobility, while Tauron "Rootwall" Oakheart, the Treeman, serves as a formidable physical presence on the field. Elendil "Swiftfoot" Greenbough and Galadriel "Moonshadow" Starbreeze offer speed and agility, with Faelan "Branchbender" Willowborn adding strength and tactical prowess to the lineup. Together, these star players create a versatile and dynamic Wood Elf team ready to take on the challenges of Blood Bowl.
 
+
+## Undead star players
+Here are five potential star players for the Undead team, including a Zombie Dragon Rider and a Vampire riding a lion:
+
+| Name                          | Species    | Skills                     | Cool Trait             | Animal Mount     | Speed | Agility | Strength | Toughness | Defense Type                    | Primary Role  |
+|-------------------------------|------------|----------------------------|------------------------|------------------|-------|---------|----------|-----------|---------------------------------|---------------|
+| Morbidus "Deathwing" Graveheart | Zombie    | Regeneration, Block        | Undying Resolve        | Zombie Dragon    | 6     | 3       | 4        | 4         | Strength-based (dragon's might) | Blitzer       |
+| Vargulf "Bloodmane" Nightfang  | Vampire    | Hypnotic Gaze, Regeneration | Predatory Instinct     | Lion             | 7     | 4       | 4        | 4         | Balanced (speed and strength)   | Blitzer       |
+| Lysandra "Soulreaper" Shadowveil| Wight     | Block, Tackle              | Spectral Agility       | -                | 6     | 4       | 3        | 8         | Evasive (agility and resilience)| Lineman       |
+| Gharak "Bonecrusher" Skullrend | Mummy     | Mighty Blow, Stand Firm    | Unstoppable Force      | -                | 3     | 1       | 5        | 9         | Immovable (physical dominance)  | Lineman       |
+| Eligos "Plaguebringer" Darkbloom| Ghoul     | Dodge, Sure Hands          | Infectious Fervor      | -                | 7     | 3       | 3        | 7         | Evasive (speed and ball handling)| Catcher       |
+
+This table introduces a mix of Undead star players, each bringing their own unique skills and traits to the team. Morbidus "Deathwing" Graveheart, with his Zombie Dragon mount, offers aerial superiority and strength, while Vargulf "Bloodmane" Nightfang adds speed and predatory prowess on his lion mount. Lysandra "Soulreaper" Shadowveil, Gharak "Bonecrusher" Skullrend, and Eligos "Plaguebringer" Darkbloom provide a balanced blend of agility, strength, and tactical advantages to the Undead team, making them a formidable force in Blood Bowl.
+
+
+
+
+
