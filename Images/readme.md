@@ -1,17 +1,9 @@
-Some images from dalle4
+---
+description: Attempts at embedding a video
+---
 
+# Embedding Video (Test)
 
-Attempts at embedding a video 
+https://github.com/dr-richard-barker/Training\_LLM\_game-theory\_using\_bloodbowl/assets/8679982/b492e069-7838-470c-b022-50d54307e6be
 
-
-
-
-
-https://github.com/dr-richard-barker/Training_LLM_game-theory_using_bloodbowl/assets/8679982/b492e069-7838-470c-b022-50d54307e6be
-
-
-
-
-
-  
-https://github.com/dr-richard-barker/Training_LLM_game-theory_using_bloodbowl/blob/main/Images/Cinematic_vido_halfling_zoom.MP4
+https://github.com/dr-richard-barker/Training\_LLM\_game-theory\_using\_bloodbowl/blob/main/Images/Cinematic\_vido\_halfling\_zoom.MP4

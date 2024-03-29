@@ -1,24 +1,23 @@
-## Brainstorming stadium and pitch designs. 
+---
+description: >-
+  Brainstorming stadium and pitch designs contirdbte to the atmosphere during a
+  game.
+---
 
+# Stadiums
 
-![Alt text](/Stadiums/IMG_6834.WEBP)
+### Standard grassy football pitch.
 
+![Alt text](IMG\_6834.WEBP)
 
+### Rocky tunnel design.
 
-## Standard grassy football pitch.
+![Alt texRocky tunnel design.t](IMG\_6836.WEBP)
 
+### The towering stadium with steep edges can be very dramatic.
 
+![Alt tThe towering stadium with steep edges can be very dramatic.ext](IMG\_6838.WEBP)
 
-![Alt text](/Stadiums/IMG_6836.WEBP)
+### The towering stadium with a dramatic tunnel.
 
-
-## Rocky tunnel design.
-
-
-![Alt text](/Stadiums/IMG_6838.WEBP)
-
-
-## The towering stadium with steep edges can be very dramatic. 
-
-
-![Alt text](/Stadiums/IMG_6839.WEBP)
+![](IMG\_6839.WEBP)

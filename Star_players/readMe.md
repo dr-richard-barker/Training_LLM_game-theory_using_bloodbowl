@@ -1,63 +1,32 @@
+---
+description: Star players statistics and potential narrative ideas.
+---
 
-## Halfling Star Players with Unusual Mounts:
+# Star players
 
-![Alt text](/Images/balloon_rider.jpeg)
+### Halfling Star Players with Unusual Mounts:
 
+![Alt text](../Images/balloon\_rider.jpeg)
 
-Here's the information converted into a table format:
+This table provides a structured overview of Halfling star players with unusual mounts, outlining their species, skills, cool traits, animal mounts, and key attributes such as speed, agility, strength, toughness, defence type, and primary role in the game. Pip's speed is boosted by his lema mount, making him a fast blitzer. Beatrice's duck mount provides some agility but is relatively fragile. Hamfast relies on his hippo's strength and bulk for his defence. Barnabas' hot air balloon grants him unique mobility and aerial advantages.
 
-| Name                           | Species   | Skills           | Cool Trait          | Animal Mount    | Speed | Agility | Strength | Toughness | Defense Type                    | Primary Role |
-|--------------------------------|-----------|------------------|---------------------|-----------------|-------|---------|----------|-----------|---------------------------------|--------------|
-| Pip "Galloping" Pipkington     | Halfling  | Leap, Dodge      | Daring Daredevil    | Lema            | 5     | 4       | 3        | 3         | Evasive (dodges and mount speed) | Blitzer      |
-| Beatrice "Beaky" Bumblefoot    | Halfling  | Catch, Pass      | Feathered Friend    | Duck            | 4     | 5       | 2        | 2         | Balanced (agility and mount)     | Catcher      |
-| Hamfast "Mudstomper" Mudfoot   | Halfling  | Block, Dodge     | Fearless            | Hippo           | 2     | 2       | 5        | 5         | Strength-based (hippo assistance)| Lineman      |
-| Barnabas "High Flyer" Bumblebrook | Halfling  | Catch, Pass      | Showman            | Hot Air Balloon | 4     | 4       | 3        | 2         | Evasive (mobility and height)    | Catcher      |
-
-This table provides a structured overview of Halfling star players with unusual mounts, outlining their species, skills, cool traits, animal mounts, and key attributes such as speed, agility, strength, toughness, defence type, and primary role in the game.
-
-**Additional notes**
-
-Pip's speed is boosted by his lema mount, making him a fast blitzer.
-Beatrice's duck mount provides some agility but is relatively fragile.
-Hamfast relies on his hippo's strength and bulk for his defence.
-Barnabas' hot air balloon grants him unique mobility and aerial advantages.
-
-![Alt text](/Images/Rabit_rider.webp)
+<table><thead><tr><th width="167">Name</th><th>Species</th><th>Skills</th><th width="133">Cool Trait</th><th>Animal Mount</th><th>Speed</th><th>Agility</th><th>Strength</th><th>Toughness</th><th>Defense Type</th><th>Primary Role</th></tr></thead><tbody><tr><td>Pip "Galloping" Pipkington</td><td>Halfling</td><td>Leap, Dodge</td><td>Daring Daredevil</td><td>Lema</td><td>5</td><td>4</td><td>3</td><td>3</td><td>Evasive (dodges and mount speed)</td><td>Blitzer</td></tr><tr><td>Beatrice "Beaky" Bumblefoot</td><td>Halfling</td><td>Catch, Pass</td><td>Feathered Friend</td><td>Duck</td><td>4</td><td>5</td><td>2</td><td>2</td><td>Balanced (agility and mount)</td><td>Catcher</td></tr><tr><td>Hamfast "Mudstomper" Mudfoot</td><td>Halfling</td><td>Block, Dodge</td><td>Fearless</td><td>Hippo</td><td>2</td><td>2</td><td>5</td><td>5</td><td>Strength-based (hippo assistance)</td><td>Lineman</td></tr><tr><td>Barnabas "High Flyer" Bumblebrook</td><td>Halfling</td><td>Catch, Pass</td><td>Showman</td><td>Hot Air Balloon</td><td>4</td><td>4</td><td>3</td><td>2</td><td>Evasive (mobility and height)</td><td>Catcher</td></tr></tbody></table>
 
 
 
-## Wood Elf Star players
+![Alt text](../Images/Rabit\_rider.webp)
 
-**Now for the wood elf team**
-
-
-Here are four potential Wood Elf star players to complement your Wood Elf team:
-
-| Name                             | Species     | Skills                    | Cool Trait                | Animal Mount    | Speed | Agility | Strength | Toughness | Defense Type                 | Primary Role   |
-|----------------------------------|-------------|---------------------------|---------------------------|-----------------|-------|---------|----------|-----------|------------------------------|----------------|
-| Aelarion "Skyhunter" Windrider   | Wood Elf    | Pass, Leap                | Aerial Acrobat            | Giant Eagle     | 7     | 5       | 3        | 3         | Evasive (aerial mobility)    | Thrower        |
-| Tauron "Rootwall" Oakheart       | Treeman     | Mighty Blow, Stand Firm   | Nature's Guardian         | -               | 2     | 1       | 6        | 9         | Immovable (physical presence)| Lineman        |
-| Elendil "Swiftfoot" Greenbough   | Wood Elf    | Dodge, Sprint             | Fleet of Foot             | -               | 8     | 4       | 2        | 2         | Evasive (speed and agility)  | Catcher        |
-| Galadriel "Moonshadow" Starbreeze| Wood Elf    | Dodge, Leap               | Ethereal Grace            | -               | 7     | 5       | 3        | 3         | Evasive (agility and stealth)| Blitzer        |
-| Faelan "Branchbender" Willowborn | Wood Elf    | Block, Tackle             | Unyielding                | -               | 6     | 4       | 3        | 3         | Balanced (strength and agility)| Blitzer       |
+### Wood Elf Star players
 
 This table introduces a balanced mix of Wood Elf star players, each with their own unique skills, traits, and roles within the team. Aelarion "Skyhunter" Windrider, with his Giant Eagle mount, provides aerial support and mobility, while Tauron "Rootwall" Oakheart, the Treeman, serves as a formidable physical presence on the field. Elendil "Swiftfoot" Greenbough and Galadriel "Moonshadow" Starbreeze offer speed and agility, with Faelan "Branchbender" Willowborn adding strength and tactical prowess to the lineup. Together, these star players create a versatile and dynamic Wood Elf team ready to take on the challenges of Blood Bowl.
 
+<table><thead><tr><th width="216">Name</th><th>Species</th><th width="139">Skills</th><th width="137">Cool Trait</th><th>Animal Mount</th><th>Speed</th><th>Agility</th><th>Strength</th><th>Toughness</th><th>Defense Type</th><th>Primary Role</th></tr></thead><tbody><tr><td>Aelarion "Skyhunter" Windrider</td><td>Wood Elf</td><td>Pass, Leap</td><td>Aerial Acrobat</td><td>Giant Eagle</td><td>7</td><td>5</td><td>3</td><td>3</td><td>Evasive (aerial mobility)</td><td>Thrower</td></tr><tr><td>Tauron "Rootwall" Oakheart</td><td>Treeman</td><td>Mighty Blow, Stand Firm</td><td>Nature's Guardian</td><td>-</td><td>2</td><td>1</td><td>6</td><td>9</td><td>Immovable (physical presence)</td><td>Lineman</td></tr><tr><td>Elendil "Swiftfoot" Greenbough</td><td>Wood Elf</td><td>Dodge, Sprint</td><td>Fleet of Foot</td><td>-</td><td>8</td><td>4</td><td>2</td><td>2</td><td>Evasive (speed and agility)</td><td>Catcher</td></tr><tr><td>Galadriel "Moonshadow" Starbreeze</td><td>Wood Elf</td><td>Dodge, Leap</td><td>Ethereal Grace</td><td>-</td><td>7</td><td>5</td><td>3</td><td>3</td><td>Evasive (agility and stealth)</td><td>Blitzer</td></tr><tr><td>Faelan "Branchbender" Willowborn</td><td>Wood Elf</td><td>Block, Tackle</td><td>Unyielding</td><td>-</td><td>6</td><td>4</td><td>3</td><td>3</td><td>Balanced (strength and agility)</td><td>Blitzer</td></tr></tbody></table>
 
-## Undead star players
-Here are five potential star players for the Undead team, including a Zombie Dragon Rider and a Vampire riding a lion:
 
-| Name                          | Species    | Skills                     | Cool Trait             | Animal Mount     | Speed | Agility | Strength | Toughness | Defense Type                    | Primary Role  |
-|-------------------------------|------------|----------------------------|------------------------|------------------|-------|---------|----------|-----------|---------------------------------|---------------|
-| Morbidus "Deathwing" Graveheart | Zombie    | Regeneration, Block        | Undying Resolve        | Zombie Dragon    | 6     | 3       | 4        | 4         | Strength-based (dragon's might) | Blitzer       |
-| Vargulf "Bloodmane" Nightfang  | Vampire    | Hypnotic Gaze, Regeneration | Predatory Instinct     | Lion             | 7     | 4       | 4        | 4         | Balanced (speed and strength)   | Blitzer       |
-| Lysandra "Soulreaper" Shadowveil| Wight     | Block, Tackle              | Spectral Agility       | -                | 6     | 4       | 3        | 8         | Evasive (agility and resilience)| Lineman       |
-| Gharak "Bonecrusher" Skullrend | Mummy     | Mighty Blow, Stand Firm    | Unstoppable Force      | -                | 3     | 1       | 5        | 9         | Immovable (physical dominance)  | Lineman       |
-| Eligos "Plaguebringer" Darkbloom| Ghoul     | Dodge, Sure Hands          | Infectious Fervor      | -                | 7     | 3       | 3        | 7         | Evasive (speed and ball handling)| Catcher       |
+
+### Undead star players
 
 This table introduces a mix of Undead star players, each bringing their own unique skills and traits to the team. Morbidus "Deathwing" Graveheart, with his Zombie Dragon mount, offers aerial superiority and strength, while Vargulf "Bloodmane" Nightfang adds speed and predatory prowess on his lion mount. Lysandra "Soulreaper" Shadowveil, Gharak "Bonecrusher" Skullrend, and Eligos "Plaguebringer" Darkbloom provide a balanced blend of agility, strength, and tactical advantages to the Undead team, making them a formidable force in Blood Bowl.
 
-
-
-
+<table><thead><tr><th width="172">Name</th><th>Species</th><th width="152">Skills</th><th>Cool Trait</th><th>Animal Mount</th><th>Speed</th><th>Agility</th><th>Strength</th><th>Toughness</th><th>Defense Type</th><th>Primary Role</th></tr></thead><tbody><tr><td>Morbidus "Deathwing" Graveheart</td><td>Zombie</td><td>Regeneration, Block</td><td>Undying Resolve</td><td>Zombie Dragon</td><td>6</td><td>3</td><td>4</td><td>4</td><td>Strength-based (dragon's might)</td><td>Blitzer</td></tr><tr><td>Vargulf "Bloodmane" Nightfang</td><td>Vampire</td><td>Hypnotic Gaze, Regeneration</td><td>Predatory Instinct</td><td>Lion</td><td>7</td><td>4</td><td>4</td><td>4</td><td>Balanced (speed and strength)</td><td>Blitzer</td></tr><tr><td>Lysandra "Soulreaper" Shadowveil</td><td>Wight</td><td>Block, Tackle</td><td>Spectral Agility</td><td>-</td><td>6</td><td>4</td><td>3</td><td>8</td><td>Evasive (agility and resilience)</td><td>Lineman</td></tr><tr><td>Gharak "Bonecrusher" Skullrend</td><td>Mummy</td><td>Mighty Blow, Stand Firm</td><td>Unstoppable Force</td><td>-</td><td>3</td><td>1</td><td>5</td><td>9</td><td>Immovable (physical dominance)</td><td>Lineman</td></tr><tr><td>Eligos "Plaguebringer" Darkbloom</td><td>Ghoul</td><td>Dodge, Sure Hands</td><td>Infectious Fervor</td><td>-</td><td>7</td><td>3</td><td>3</td><td>7</td><td>Evasive (speed and ball handling)</td><td>Catcher</td></tr></tbody></table>
 
