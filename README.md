@@ -11,6 +11,8 @@ description: >-
 
 Planning and visualising a Blood Bowl game between a Halfling and Undead team involves understanding the key characteristics and strategies of both teams, as well as creating a vivid image of the clash on the pitch. Here's how we can break it down:
 
+![Halfling team](Images/759F6B7E-FBE9-4833-9B6F-1E196257A0A0.JPG)
+
 ## Understanding the Teams (life vs death)
 
 Halfling Team: Known for their agility and surprising resilience, Halflings are underdogs in Blood Bowl. They rely on their Treemen to provide muscle and throwing capability, while the Halflings themselves excel at dodging and unexpected plays. Their game strategy often involves avoiding direct confrontations and using their mobility to outmanoeuvre opponents. Undead Team: The Undead bring a mix of speed (from Ghouls and Wights) and brute strength (from Mummies). Thanks to Regeneration and a generally sturdy lineup, they can absorb punishment and keep coming. Their strategy can be more straightforward, using their strength and resilience to dominate the field and control the ball with their faster units.
@@ -22,8 +24,6 @@ Halfling Team: Known for their agility and surprising resilience, Halflings are 
 **Mid-Game:** Halflings will need to exploit any gaps they can find, using their agility to slip through Undead lines. The Undead will focus on controlling the pitch, using their Ghouls to chase down the ball and Wights to block Halfling movements.
 
 **Endgame:** If the Halflings manage to stay clear of the Undead's grasp, they could pull off a surprise win with a swift touchdown. The Undead team will rely on grinding down the Halflings and securing the ball for a slow, relentless advance towards the Halfling end zone.
-
-![Halfling team](Images/759F6B7E-FBE9-4833-9B6F-1E196257A0A0.JPG)
 
 **Visualising the Game** Imagine a scene where a Halfling player is attempting a daring dodge around a Wight, ball in hand, aiming for a clear path to the end zone. In the background, a Treeman is engaged with a Mummy, fans from both sides are on their feet, and the rest of the players are positioned in a dynamic and tense formation, reflecting the critical moment of the game. This image captures the intensity and dynamics of the match, with key players in action and fans from both sides fully engaged in the spectacle. Use this visualization to enhance your planning and execution of the game, imagining the strategies and movements that could lead to victory or defeat for either side.
 
