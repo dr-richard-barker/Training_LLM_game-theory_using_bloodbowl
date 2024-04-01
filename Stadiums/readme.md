@@ -1,6 +1,6 @@
 ---
 description: >-
-  Brainstorming stadium and pitch designs contirdbte to the atmosphere during a
+  Brainstorming stadium and pitch designs contribute to the atmosphere during a
   game.
 ---
 
