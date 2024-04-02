@@ -1,6 +1,10 @@
+---
+description: 'Human team name: Arsenal'
+---
+
 # Human team
 
-**Human team name:**
+
 
 !(Human team)\[/Images/Dalle4\_human\_field.webp]
 
