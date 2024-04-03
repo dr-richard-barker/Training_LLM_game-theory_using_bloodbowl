@@ -36,25 +36,32 @@ This table introduces a mix of Undead star players, each bringing their own uniq
 
 
 
-Black orc champion
+## Fantastical Creatures and Characters
 
-Goblin and swig
+### Mythical Beings
 
-Goblin with explosives
+* **Flaming Skeleton**: A skeletal figure engulfed in perpetual flames, striking fear into the hearts of all who cross its path.
+* **Demon Daddy and Mummy**: An ancient entity with demonic powers, wrapped in the garb of a mummy, blending horror from two realms.
 
-Goblin on pogo stick
+### Hybrid Creatures
 
-Goblin with chain saw
+* **Werewolf Troll**: A fearsome combination of a troll's strength and a werewolf's ferocity, lurking in the shadows.
+* **Goblin Variants**:
+  * **With Chainsaw**: A goblin armed with a chainsaw, ready to cut down anything or anyone in its path.
+  * **On Pogo Stick**: A goblin uniquely equipped with a pogo stick, bouncing unpredictably during its raids.
+  * **With Explosives**: A goblin known for its love of explosives, often seen causing chaos with blasts.
+  * **And Swig**: This goblin enjoys a good swig now and then, perhaps making it more erratic.
 
-Troll
+### Champions
 
-Werewolf
+* **Black Orc Champion**: The ultimate warrior among orcs, distinguished by its fearsome prowess and leadership on the battlefield.
 
-Mummy&#x20;
+\
+Blood Bowl Star Player Summary: Monstrous Mayhem
 
-Daddy
+<table><thead><tr><th>Name</th><th>Species</th><th width="100">Skills</th><th>Cool Trait</th><th width="101">Animal Mount</th><th>Speed</th><th>Agility</th><th>Strength</th><th>Toughness</th><th>Defense Type</th><th>Primary Role</th></tr></thead><tbody><tr><td>Zugnog "Da Big 'Ed"</td><td>Black Orc</td><td>Block, Break Tackle, Frenzy</td><td>"Never Satisfied" - Gains bonuses to Strength and Aggression after each successful injury inflicted.</td><td>Goblin (Swig Holder)</td><td>3</td><td>2</td><td>6</td><td>5</td><td>Mixed (Goblin assists and armor)</td><td>Blitzer</td></tr><tr><td>Boom Git "Da Exploding Fool"</td><td>Goblin</td><td>Dodge, Leap, Bomber</td><td>"Unpredictable Kaboom" - Can throw bombs with surprising accuracy but also risks accidentally blowing himself up.</td><td>Backpack of Bombs</td><td>4</td><td>4</td><td>3</td><td>3</td><td>Evasive (dodges and bombs)</td><td>Bomber</td></tr><tr><td>Spikea "Da Bouncy Terror"</td><td>Goblin</td><td>Dodge, Leap, Tackle</td><td>"Always Bouncing" - Gains movement bonuses and can use his pogo stick for surprising dodges and tackles.</td><td>Pogo Stick</td><td>5</td><td>5</td><td>2</td><td>3</td><td>Evasive (pogo stick mobility)</td><td>Disruptor</td></tr><tr><td>Gnasher "Da Hackin' Maniac"</td><td>Goblin</td><td>Dodge, Mighty Blow, Chainsaw</td><td>"Can't Stop Sawin'" - Gains bonuses to attack rolls using his chainsaw but risks injuring himself on failed attempts.</td><td>None</td><td>4</td><td>3</td><td>4</td><td>3</td><td>Strength-based (chainsaw)</td><td>Blitzer</td></tr><tr><td>Gorknax "Da Devourer"</td><td>Troll</td><td>Block, Regeneration, Mighty Blow</td><td>"Endless Hunger" - Can regain lost health by eating downed enemies, but this also enrages him.</td><td>None</td><td>2</td><td>2</td><td>7</td><td>7</td><td>Strength-based (bulk)</td><td>Destroyer</td></tr><tr><td>Claw "Da Feral Beast"</td><td>Werewolf</td><td>Dodge, Leap, Frenzy</td><td>"Full Moon Fury" - Gains increased Strength and Agility during the full moon, but loses control at other times.</td><td>None</td><td>5</td><td>5</td><td>5</td><td>4</td><td>Mixed (agility and frenzy)</td><td>Blitzer</td></tr><tr><td>Ramses "Da Everlasting"</td><td>Undead (Mummy)</td><td>Regeneration, Stand Firm, Block</td><td>"Ancient Curse" - Difficult to injure permanently, but slow and sluggish.</td><td>None</td><td>2</td><td>2</td><td>5</td><td>5</td><td>Strength-based (armor)</td><td>Defender</td></tr><tr><td>"Da" Deadwood Daddy</td><td>Undead (Skeleton)</td><td>Pass, Dodge, Stunty</td><td>"Unyielding Spirit" - Never panics and can re-roll failed dodge rolls.</td><td>None</td><td>4</td><td>4</td><td>2</td><td>3</td><td>Evasive (dodges and agility)</td><td>Runner</td></tr><tr><td>"Lil" Rotgut</td><td>Undead (Halfling/Child)</td><td>Dodge, Leap, Stunty</td><td>"Slippery Soul" - Extremely difficult to grab or tackle due to his small size and spectral nature.</td><td>None</td><td>4</td><td>5</td><td>2</td><td>2</td><td>Evasive (agility and size)</td><td>Ball Carrier</td></tr><tr><td>Skully "Da Burnin' One"</td><td>Undead (Flaming Skeleton Demon)</td><td>Dodge, Leap, Flaming Weapon</td><td>"Infernal Touch" - Attacks set enemies ablaze, but Skully also risks taking fire damage.</td><td>None</td><td>4</td><td>3</td><td>4</td><td>3</td><td>Mixed (evasive and fiery)</td><td>Blitzer</td></tr></tbody></table>
 
-Flaming Skelton Demon
+
 
 
 
