@@ -4,7 +4,7 @@ description: 'Halfling team name: Norwich town from Northfolkshire'
 
 # The halfling team
 
-
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 Team players statistics and potential narrative ideas; Incorporating numerical attributes for speed, agility, strength, and toughness, along with a brief description of their type of defense, provides a more comprehensive look at the capabilities and strategies of each player on the expanded Halfling team. Here's an enhanced table with these details:
 
