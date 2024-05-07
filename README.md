@@ -1,8 +1,7 @@
 ---
 description: >-
   We will explore the use of LLM’s to design and assist with the preparation of
-  teams and creation of the characteristers required to play board game. This
-  training is written from the perspective of a
+  teams and creation of the characters required to play the blood bowl board game. 
 ---
 
 # Training how to use game theory using the Warhammer game known as "Blood Bowl"
