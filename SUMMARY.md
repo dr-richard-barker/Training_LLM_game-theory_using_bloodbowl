@@ -13,3 +13,7 @@
   * [Steampunk Halfling Blood Bowl team](designing\_team/steampunk-halfling-blood-bowl-team.md)
   * [Creating a thematic and detailed environment for Blood Bowl](designing\_team/creating-a-thematic-and-detailed-environment-for-blood-bowl.md)
   * [50 Tricks of the miniture construction trade](designing\_team/50-tricks-of-the-miniture-construction-trade.md)
+* [Kick team-mate flow chart](kick-team-mate-flow-chart.md)
+* [Throw team-mate flow chart](throw-team-mate-flow-chart.md)
+* [Bom flow chart](bom-flow-chart.md)
+* [Passing flow chart](passing-flow-chart.md)
