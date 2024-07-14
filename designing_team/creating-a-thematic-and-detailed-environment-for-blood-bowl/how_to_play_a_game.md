@@ -6,9 +6,9 @@ description: >-
 
 # Playing Blood Bowl with Unusual Halfling Mounts:
 
-&#x20;Here's a summary of how your unique Halfling players with animal mounts would interact with the core mechanics:
+Here's a summary of how your unique Halfling players with animal mounts would interact with the core mechanics:
 
-**Movement:**
+**Movement: -**
 
 * **Mounts affect movement:** Your Halfling players move according to their own speed stat, but their mounts can modify this. For example, Pip's lema increases his movement, Hamfast's hippo makes him slower and the duck allows Barnabas to fly almost anyware on the field.
 * **Mounts require activation:** Mounts act as separate entities that you need to activate and move each turn. They can perform basic actions like walking, but their specific abilities might differ. Discuss the probabilty of the hippo going bazerka, the lema jumping other the opposition linesmen, the geese laying a easter egg or hot air balloon sprinjng a leak?!
