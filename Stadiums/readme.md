@@ -39,16 +39,22 @@ Or this one is free and full size just minimal detail
 
 A typical grass football pitch for human play follows these standards: **Surface:** Natural grass, well-maintained for uniformity. **Markings:** White lines for boundaries, midfield, penalty areas, and center circle, aligning with international soccer criteria. This setup ensures an ideal playing field.
 
-![Alt text](IMG\_6834.WEBP)
+![Alt text](IMG_6834.WEBP)
 
 ### Rocky tunnel design for goblins.
 
-![Alt texRocky tunnel design.t](IMG\_6836.WEBP)
+![Alt texRocky tunnel design.t](IMG_6836.WEBP)
 
 ### The towering stadium with steep edges can be very dramatic for dwarfs.
 
-![Alt tThe towering stadium with steep edges can be very dramatic.ext](IMG\_6838.WEBP)
+![Alt tThe towering stadium with steep edges can be very dramatic.ext](IMG_6838.WEBP)
 
 ### The towering stadium with a dramatic tunnel for dwarfs.&#x20;
 
-![](IMG\_6839.WEBP)
+![](IMG_6839.WEBP)
+
+Here’s a work in progress midway photoshoot. I’ve tried to use AI and doodle on ome to help plan the next stage, so far I’ve just put a lacier of clay on a polystyrene base and painted a central square orange. 2b continued.\
+
+
+<div><figure><img src="../.gitbook/assets/FB672C1B-2284-459A-B7D6-1245ECB6C282-COLLAGE.jpeg" alt=""><figcaption></figcaption></figure> <figure><img src="../.gitbook/assets/IMG_7323.jpeg" alt=""><figcaption></figcaption></figure> <figure><img src="../.gitbook/assets/7530CF13-B036-427E-8635-5597C60EA0B9.jpeg" alt=""><figcaption></figcaption></figure> <figure><img src="../.gitbook/assets/IMG_7320.jpeg" alt=""><figcaption></figcaption></figure></div>
+
