@@ -17,6 +17,7 @@
       <p class="subtitle">A future-sport league of the eight great teams.<br>
       Steel walls. No fouls. No mercy.</p>
       <button class="btn big" id="btn-start">ENTER THE ARENA</button>
+      <button class="btn" id="btn-help-title">HOW TO PLAY</button>
       <button class="btn" id="btn-reset-save">RESET SEASON</button>
       <p class="footnote">An original fan-made arcade game for the
       <a href="../">Blood Bowl × Game Theory League</a>.</p>
@@ -52,6 +53,7 @@
       </div>
       <div class="row">
         <button class="btn" id="btn-back-select">◄ CHANGE TEAM</button>
+        <button class="btn" id="btn-help-manage">HOW TO PLAY</button>
         <button class="btn" id="btn-league">LEAGUE TABLE</button>
         <button class="btn big" id="btn-play">PLAY NEXT MATCH ►</button>
       </div>
@@ -66,6 +68,44 @@
       <table id="league-table" class="league-table"></table>
       <div class="row">
         <button class="btn" id="btn-back-manage">◄ BACK</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO PLAY -->
+  <section id="screen-help" class="screen">
+    <div class="chrome-panel">
+      <h2 class="chrome-sub">HOW TO PLAY</h2>
+      <div class="help-cols">
+        <div class="help-text">
+          <h3>The Game</h3>
+          <p>A fast arena ball game. Steel walls keep the ball in play — no
+          out-of-bounds, no fouls. Throw the ball into the glowing goal bay at
+          the far end to score <b>10 points</b>. Two halves; most points wins.</p>
+          <h3>On the Pitch</h3>
+          <p>You control the highlighted player; your team-mates and opponents
+          are AI. Control switches to whichever team-mate catches the ball.
+          Tackle the carrier to jar the ball loose — big hits can send a player
+          to the medics. Knocked-down players get up after a moment.</p>
+          <h3>The League</h3>
+          <p>Seven match days against the other seven teams. Results earn
+          credits — <b>30</b> a win, <b>15</b> a draw, <b>5</b> a loss, plus
+          <b>2 per goal</b> — which you spend in the team screen (+1 stat costs
+          10). The other fixtures are simulated each match day.</p>
+          <h3>Match Tools</h3>
+          <p>AUTO COACH lets the AI play your team while you take a break. The
+          SPEED dial runs the match from 0.25× slow motion to 4× fast forward.
+          ARENA changes the scenery; SOUND toggles the effects.</p>
+        </div>
+        <div>
+          <h3 class="binds-title">Controls <span class="hint">(click a key to change it — ESC cancels)</span></h3>
+          <div id="keybinds" class="keybinds"></div>
+          <p class="hint">The arrow keys always steer, whatever else you bind.</p>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btn-reset-keys">RESET KEYS</button>
+        <button class="btn big" id="btn-help-back">◄ BACK</button>
       </div>
     </div>
   </section>

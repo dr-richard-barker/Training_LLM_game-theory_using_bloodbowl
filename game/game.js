@@ -9,7 +9,9 @@ const SAVE_KEY = 'brutalbowl_save_v1';
 
 function defaultSave() {
   return { teamId: null, credits: 20, upgrades: {}, results: [], round: 0,
-           speed: 1, autoCoach: false, backdrop: 'steel', sound: true };
+           speed: 1, autoCoach: false, backdrop: 'steel', sound: true,
+           keys: { up: 'w', down: 's', left: 'a', right: 'd',
+                   action: ' ', shoot: 'x', switch: 'c', coach: 'p' } };
 }
 let save = loadSave();
 function loadSave() {
@@ -21,6 +23,7 @@ function loadSave() {
       s.autoCoach = !!s.autoCoach;
       if (typeof s.backdrop !== 'string') s.backdrop = 'steel';
       s.sound = s.sound !== false;
+      s.keys = Object.assign({}, defaultSave().keys, s.keys || {});
       return s;
     }
   } catch (e) { /* corrupted save -> start fresh */ }
@@ -233,14 +236,16 @@ let keys = {};
 let lastTime = 0;
 
 addEventListener('keydown', e => {
-  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
-  keys[e.key.toLowerCase()] = true;
+  const k = e.key.toLowerCase();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k) ||
+      Object.values(save.keys).includes(k)) e.preventDefault();
+  keys[k] = true;
   if (M && M.phase === 'play') {
-    if (e.key.toLowerCase() === 'p') { setAutoCoach(!M.autoCoach); return; }
+    if (k === save.keys.coach) { setAutoCoach(!M.autoCoach); return; }
     if (!M.autoCoach) {                 // manual controls disabled while the coach plays
-      if (e.key === ' ') actionKey();
-      if (e.key.toLowerCase() === 'x') shootKey();
-      if (e.key.toLowerCase() === 'c') switchKey();
+      if (k === save.keys.action) actionKey();
+      if (k === save.keys.shoot) shootKey();
+      if (k === save.keys.switch) switchKey();
     }
   }
 });
@@ -576,8 +581,9 @@ function step(dt) {
   // user input on active player (skipped while Auto Coach drives the whole team)
   const a = M.active;
   if (a && a.down <= 0 && !a.out && !M.autoCoach) {
-    let dx = (keys['arrowright'] || keys['d'] ? 1 : 0) - (keys['arrowleft'] || keys['a'] ? 1 : 0);
-    let dy = (keys['arrowdown'] || keys['s'] ? 1 : 0) - (keys['arrowup'] || keys['w'] ? 1 : 0);
+    const K = save.keys;
+    let dx = (keys['arrowright'] || keys[K.right] ? 1 : 0) - (keys['arrowleft'] || keys[K.left] ? 1 : 0);
+    let dy = (keys['arrowdown'] || keys[K.down] ? 1 : 0) - (keys['arrowup'] || keys[K.up] ? 1 : 0);
     const max = (1.6 + a.sp * 0.28) * (a.lunge > 0 ? 1.9 : 1);
     if (dx || dy) {
       const n = Math.hypot(dx, dy);
@@ -1470,6 +1476,68 @@ function loop(t) {
 /* debug/testing hook: step the sim manually from the console */
 window.__bb = { step: dt => step(dt), state: () => M, save: () => save };
 
+/* ---------- how to play / key bindings ---------- */
+const KEY_ACTIONS = [
+  ['up', 'Move up'], ['down', 'Move down'], ['left', 'Move left'], ['right', 'Move right'],
+  ['action', 'Pass (with ball) / Tackle'], ['shoot', 'Shoot at goal'],
+  ['switch', 'Switch player'], ['coach', 'Auto Coach on/off'],
+];
+let capturingKey = null;    // action currently waiting for a new key
+let helpReturn = 'screen-title';
+
+function keyName(k) {
+  return { ' ': 'SPACE', arrowup: '↑', arrowdown: '↓', arrowleft: '←', arrowright: '→',
+           escape: 'ESC', enter: 'ENTER', tab: 'TAB', shift: 'SHIFT', control: 'CTRL',
+           alt: 'ALT', backspace: 'BKSP' }[k] || k.toUpperCase();
+}
+
+function controlsHelpText() {
+  const K = a => keyName(save.keys[a]);
+  return `MOVE: ${K('up')}${K('left')}${K('down')}${K('right')} / arrows · ` +
+         `${K('action')}: pass / tackle · ${K('shoot')}: shoot · ` +
+         `${K('switch')}: switch player · ${K('coach')}: auto coach`;
+}
+
+function renderHelp() {
+  const box = $('keybinds');
+  box.innerHTML = '';
+  for (const [act, label] of KEY_ACTIONS) {
+    const row = document.createElement('div');
+    row.className = 'keyrow';
+    const btnLabel = capturingKey === act ? 'PRESS A KEY…' : keyName(save.keys[act]);
+    row.innerHTML = `<span>${label}</span>
+      <button class="btn keybtn ${capturingKey === act ? 'listening' : ''}"
+        data-act="${act}">${btnLabel}</button>`;
+    box.appendChild(row);
+  }
+  box.querySelectorAll('.keybtn').forEach(b => b.onclick = () => {
+    capturingKey = b.dataset.act; renderHelp();
+  });
+}
+
+/* capture-phase listener so a rebind press never reaches the game */
+addEventListener('keydown', e => {
+  if (!capturingKey) return;
+  e.preventDefault(); e.stopPropagation();
+  const k = e.key.toLowerCase();
+  if (k !== 'escape') {
+    for (const a in save.keys)                    // stole another action's key? swap them
+      if (a !== capturingKey && save.keys[a] === k) save.keys[a] = save.keys[capturingKey];
+    save.keys[capturingKey] = k;
+    persist();
+  }
+  capturingKey = null;
+  renderHelp();
+  if (!(M && M.autoCoach)) $('controls-help').textContent = controlsHelpText();
+}, true);
+
+function openHelp(from) {
+  helpReturn = from;
+  capturingKey = null;
+  renderHelp();
+  show('screen-help');
+}
+
 /* ---------- Auto Coach + speed dial ---------- */
 function setAutoCoach(on) {
   on = !!on;
@@ -1479,8 +1547,8 @@ function setAutoCoach(on) {
   if (b) { b.textContent = 'AUTO COACH: ' + (on ? 'ON' : 'OFF'); b.classList.toggle('on', on); }
   const help = $('controls-help');
   if (help) help.textContent = on
-    ? 'AUTO COACH ON — the team plays itself. Press the button (or P) to take control back.'
-    : 'MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player · P: auto coach';
+    ? `AUTO COACH ON — the team plays itself. Press the button (or ${keyName(save.keys.coach)}) to take control back.`
+    : controlsHelpText();
 }
 
 function fmtClock(sec) {
@@ -1506,6 +1574,18 @@ function syncMatchControls() {
 $('btn-autocoach').onclick = () => setAutoCoach(!(M && M.autoCoach));
 $('btn-sound').onclick = () => setSound(!save.sound);
 setSound(save.sound);
+$('btn-help-title').onclick = () => openHelp('screen-title');
+$('btn-help-manage').onclick = () => openHelp('screen-manage');
+$('btn-help-back').onclick = () => {
+  capturingKey = null;
+  if (helpReturn === 'screen-manage') renderManage();
+  show(helpReturn);
+};
+$('btn-reset-keys').onclick = () => {
+  save.keys = defaultSave().keys; persist(); renderHelp();
+  if (!(M && M.autoCoach)) $('controls-help').textContent = controlsHelpText();
+};
+$('controls-help').textContent = controlsHelpText();
 {
   const dial = $('speed-dial');
   dial.value = save.speed;

@@ -170,3 +170,25 @@ html, body {
 .dial select:hover { filter: brightness(1.2); }
 
 .post-score { font-size: 2.2rem; color: var(--brass); margin: 12px 0; text-shadow: 0 2px 0 #0a0d12; }
+
+/* how to play */
+.help-cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 26px; }
+@media (max-width: 720px) { .help-cols { grid-template-columns: 1fr; } }
+.help-text h3, .binds-title { color: var(--brass); margin: 12px 0 6px; font-size: 1rem; }
+.help-text h3:first-child { margin-top: 0; }
+.help-text p { color: #9fb0cc; font-size: .88rem; line-height: 1.55; }
+.help-text b { color: var(--chrome-hi); }
+.keybinds { border: 2px solid #313c50; border-radius: 8px; padding: 6px 10px; }
+.keyrow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 2px; border-bottom: 1px solid #232c3c; font-size: .85rem; color: #9fb0cc;
+}
+.keyrow:last-child { border-bottom: none; }
+.keybtn { margin: 0; padding: 5px 12px; min-width: 74px; font-size: .8rem; }
+.keybtn.listening {
+  color: #08222a;
+  background: linear-gradient(180deg, #7ff0ff 0%, #2aa7b8 48%, #1b7c8a 55%, #59d6e6 100%);
+  border-color: #bff6ff #0d4a54 #093a42 #bff6ff;
+  animation: keypulse 0.9s ease-in-out infinite alternate;
+}
+@keyframes keypulse { from { filter: brightness(1); } to { filter: brightness(1.45); } }
