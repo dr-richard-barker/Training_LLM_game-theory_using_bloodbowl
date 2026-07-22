@@ -8,7 +8,7 @@ description: Star players statistics and potential narrative ideas.
 
 These star players bring a high-fantasy element to the game, each with their unique abilities and strategies that can dramatically alter the flow of play. From aerial assaults and magical barrages to unstoppable charges and tactical dives, they add depth and excitement to the traditional Blood Bowl gameplay.
 
-![Alt text](../Images/DALLE4)
+![Alt text](../Images/star_players.webp)
 
 #### Attribute Scale:
 
@@ -83,7 +83,7 @@ This table introduces a mix of Undead star players, each bringing their own uniq
 
 ### Halfling Star Players with Unusual Mounts:
 
-![Alt text](../Images/balloon\_rider.jpeg)
+![Alt text](../Images/balloon_rider.jpeg)
 
 This table provides a structured overview of Halfling star players with unusual mounts, outlining their species, skills, cool traits, animal mounts, and key attributes such as speed, agility, strength, toughness, defence type, and primary role in the game. Pip's speed is boosted by his lema mount, making him a fast blitzer. Beatrice's duck mount provides some agility but is relatively fragile. Hamfast relies on his hippo's strength and bulk for his defence. Barnabas' hot air balloon grants him unique mobility and aerial advantages.
 
@@ -91,7 +91,7 @@ This table provides a structured overview of Halfling star players with unusual 
 
 
 
-![Alt text](../Images/Rabit\_rider.webp)
+![Alt text](../Images/Rabit_rider.webp)
 
 ###
 

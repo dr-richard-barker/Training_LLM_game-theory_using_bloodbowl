@@ -6,7 +6,7 @@ description: 'Undead team name: Chariots of death.'
 
 The composition of the Undead team, featuring an array of zombies, ghouls, skeletons, wights, and mummies, offers a potent combination of substantial physical strength, strategic depth, and remarkable agility. This diverse roster ensures the team is a formidable adversary on the field, capable of competing against teams with a high degree of mobility, such as the Halflings. The strategic diversity and challenges presented by the Undead team's unique mix of players highlight their competitiveness in the game.
 
-![Undead team](Images/Dalle4\_test)
+![Undead team](Images/undead_team.webp)
 
 For the Undead team rivaling the living team, let's create a lineup that showcases their unique strengths and styles, complete with numerical attributes for speed, agility, strength, and toughness, as well as a brief description of their type of defense:
 

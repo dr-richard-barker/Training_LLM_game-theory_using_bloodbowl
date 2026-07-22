@@ -6,7 +6,7 @@ description: >-
 
 # Training how to use game theory using the Warhammer game known as "Blood Bowl"
 
-![Halfling team](Images/759F6B7E-FBE9-4833-9B6F-1E196257A0A0.JPG)
+![Halfling team](Images/halfling_team.jpg)
 
 ### This site is designed to help you visualise a blood ball game between a halfling and undead team the rest of the league
 

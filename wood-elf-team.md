@@ -6,7 +6,7 @@ description: 'Wood Elf team name: Floating Oaks'
 
 Wood Elf teams are renowned for their exceptional speed and agility, enabling them to execute swift and agile maneuvers effectively. This ability positions them to outperform and outmaneuver opposing teams with relative ease. However, their comparative lack of strength and toughness renders them susceptible to more physically dominant teams. To mitigate this vulnerability, Wood Elf teams leverage their superior mobility and ball-handling skills.
 
-![Alt text](Images/Dalle4\_wood\_elf)
+![Alt text](Images/wood_elf_team.webp)
 
 Designing a Wood Elf Blood Bowl team emphasizes their exceptional agility, speed, and ball-handling skills, making them one of the most dynamic and mobile teams on the pitch. Here's a detailed breakdown of a Wood Elf team, with their roles, special moves, cool traits, numerical attributes for speed, agility, strength, and toughness, and a brief description of their type of defense:
 

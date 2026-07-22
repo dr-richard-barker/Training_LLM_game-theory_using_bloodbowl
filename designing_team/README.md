@@ -8,7 +8,7 @@ description: >-
 
 Master model painting is as much about patience and practice as it is about technique. Take your time with each step, allowing layers to dry fully before proceeding. Enjoy the process of bringing your Halflings to life with your painting!
 
-![halfling](../Images/BB0FAF03-2FAC-4732-BC66-F70138500D99.jpeg)
+![halfling](../Images/halfling_miniatures.jpeg)
 
 ### 1. **Base Layering**
 
@@ -44,6 +44,6 @@ Master model painting is as much about patience and practice as it is about tech
 
 ***
 
-![halfling after game](../Images/6324BEFE-3202-4426-99D2-015EB5BC9160.webp)
+![halfling after game](../Images/halfling_after_game.webp)
 
 ***

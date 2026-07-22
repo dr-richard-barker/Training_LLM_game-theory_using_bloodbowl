@@ -6,7 +6,7 @@ description: 'Orc team name: Skull crushers'
 
 The Orc team, leveraging a potent combination of formidable strength and tactical agility brought forward by their Goblins, establishes a formidable presence on the Blood Bowl field. Their strategy primarily focuses on exerting control over the line of scrimmage through sheer power, complemented by the agility of Blitzers and select Goblins who are instrumental in executing dynamic maneuvers. This strategic approach positions them as a highly competitive and versatile team within the league.
 
-![Orc team](Images/Dalle4\_orc)
+![Orc team](Images/orc_team.webp)
 
 Creating a rival Orc team to face off against the Halflings involves showcasing the Orcs' characteristic blend of brute strength and surprising agility in some positions. Here's how an Orc Blood Bowl team could be structured, complete with their roles, special moves, cool traits, and numerical attributes for speed, agility, strength, and toughness, plus a minimal description of their type of defense:
 
