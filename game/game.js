@@ -8,13 +8,19 @@
 const SAVE_KEY = 'brutalbowl_save_v1';
 
 function defaultSave() {
-  return { teamId: null, credits: 20, upgrades: {}, results: [], round: 0 };
+  return { teamId: null, credits: 20, upgrades: {}, results: [], round: 0,
+           speed: 1, autoCoach: false };
 }
 let save = loadSave();
 function loadSave() {
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (s && typeof s === 'object' && Array.isArray(s.results)) return s;
+    if (s && typeof s === 'object' && Array.isArray(s.results)) {
+      // migrate older saves that predate the speed / auto-coach settings
+      if (typeof s.speed !== 'number' || !isFinite(s.speed)) s.speed = 1;
+      s.autoCoach = !!s.autoCoach;
+      return s;
+    }
   } catch (e) { /* corrupted save -> start fresh */ }
   return defaultSave();
 }
@@ -209,11 +215,16 @@ function renderLeague() {
    MATCH ENGINE
    ========================================================= */
 const W = 640, H = 960, WALL = 22, GOAL_W = 150;
-const PR = 14, BR = 7;               // player / ball radius
+const PR = 18, BR = 8;               // base player / ball radius (big guys scale up)
+const RES = 2;                       // render supersampling — crisp high-res canvas
+const MARGIN = 84;                   // stadium stands drawn around the pitch
 // seconds per half (override for quick games with ?half=30 in the URL)
 const HALF_LEN = Number(new URLSearchParams(location.search).get('half')) || 90;
 
 const cv = $('pitch'), cx = cv.getContext('2d');
+cv.width = W; cv.height = H;          // fix the drawing buffer to the play-field size
+cv.width = (W + 2 * MARGIN) * RES;
+cv.height = (H + 2 * MARGIN) * RES;
 
 let M = null;                        // current match state
 let keys = {};
@@ -223,20 +234,26 @@ addEventListener('keydown', e => {
   if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
   keys[e.key.toLowerCase()] = true;
   if (M && M.phase === 'play') {
-    if (e.key === ' ') actionKey();
-    if (e.key.toLowerCase() === 'x') shootKey();
-    if (e.key.toLowerCase() === 'c') switchKey();
+    if (e.key.toLowerCase() === 'p') { setAutoCoach(!M.autoCoach); return; }
+    if (!M.autoCoach) {                 // manual controls disabled while the coach plays
+      if (e.key === ' ') actionKey();
+      if (e.key.toLowerCase() === 'x') shootKey();
+      if (e.key.toLowerCase() === 'c') switchKey();
+    }
   }
 });
 addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
 function newPlayer(team, p, side, i, n) {
   const lane = (i + 1) / (n + 1);
+  const kind = kindOf(team, p.role);
   return {
     team, side,                       // side 0 = user (bottom, attacks top), 1 = cpu
     name: p.name, role: p.role,
     sp: playerStat(team.id, p, 'sp'), ag: playerStat(team.id, p, 'ag'),
     st: playerStat(team.id, p, 'st'), to: playerStat(team.id, p, 'to'),
+    kind, r: PR * (KIND_SIZE[kind] || 1),
+    face: side === 0 ? -Math.PI / 2 : Math.PI / 2,
     x: WALL + lane * (W - 2 * WALL),
     y: side === 0 ? H * (0.6 + 0.25 * (i % 2)) : H * (0.4 - 0.25 * (i % 2)),
     hx: 0, hy: 0, vx: 0, vy: 0,
@@ -267,11 +284,15 @@ function startMatch() {
     score: [0, 0], half: 1, clock: HALF_LEN,
     phase: 'kickoff', phaseT: 1.5,
     active: null, ticker: '', tickerT: 0,
+    autoCoach: !!save.autoCoach,
   };
+  M.players.forEach(p => { p.sprite = makeSprite(p.kind, M.kits[p.side], p.r); });
+  M.bg = [buildStadium(0), buildStadium(1)];
   M.active = nearestPlayer(0, M.ball);
   $('hud-home').textContent = userTeam.name;
   $('hud-away').textContent = oppTeam.name;
   updateHud();
+  syncMatchControls();
   show('screen-match');
   ticker('MATCH DAY ' + (save.round + 1) + ' — GET READY');
   lastTime = performance.now();
@@ -391,7 +412,7 @@ function aiThink(p, dt) {
       tx += (p.x - threat.x) * 2.2; ty += (p.y - threat.y) * 0.6;
     }
     aiSteer(p, tx, ty, dt);
-    if (p.side === 1 || p !== M.active) {          // AI decisions (not user-controlled carrier)
+    if (p.side === 1 || p !== M.active || M.autoCoach) {   // AI decisions (incl. under Auto Coach)
       const dGoal = dist(p, goal);
       if (dGoal < 300 && Math.random() < dt * (0.8 + p.ag * 0.1)) shoot(p);
       else if (threat && dist(p, threat) < 55 && Math.random() < dt * 3) passBall(p);
@@ -445,9 +466,9 @@ function step(dt) {
     endMatch(); return;
   }
 
-  // user input on active player
+  // user input on active player (skipped while Auto Coach drives the whole team)
   const a = M.active;
-  if (a && a.down <= 0 && !a.out) {
+  if (a && a.down <= 0 && !a.out && !M.autoCoach) {
     let dx = (keys['arrowright'] || keys['d'] ? 1 : 0) - (keys['arrowleft'] || keys['a'] ? 1 : 0);
     let dy = (keys['arrowdown'] || keys['s'] ? 1 : 0) - (keys['arrowup'] || keys['w'] ? 1 : 0);
     const max = (1.6 + a.sp * 0.28) * (a.lunge > 0 ? 1.9 : 1);
@@ -463,9 +484,10 @@ function step(dt) {
     if (p.down > 0) { p.down -= dt; p.vx = p.vy = 0; continue; }
     if (p.lunge > 0) p.lunge -= dt;
     if (p.cooldown > 0) p.cooldown -= dt;
-    if (p !== M.active || p.side === 1) aiThink(p, dt);
-    p.x = clamp(p.x + p.vx * dt * 60, WALL + PR, W - WALL - PR);
-    p.y = clamp(p.y + p.vy * dt * 60, WALL + PR, H - WALL - PR);
+    if (p !== M.active || p.side === 1 || M.autoCoach) aiThink(p, dt);
+    p.x = clamp(p.x + p.vx * dt * 60, WALL + p.r, W - WALL - p.r);
+    p.y = clamp(p.y + p.vy * dt * 60, WALL + p.r, H - WALL - p.r);
+    if (Math.hypot(p.vx, p.vy) > 0.45) p.face = Math.atan2(p.vy, p.vx);
     if (!p.hx) { p.hx = p.x; p.hy = p.y; }
   }
 
@@ -473,10 +495,12 @@ function step(dt) {
   for (let i = 0; i < M.players.length; i++) for (let j = i + 1; j < M.players.length; j++) {
     const p = M.players[i], q = M.players[j];
     if (p.out || q.out || p.down > 0 || q.down > 0) continue;
-    const d = dist(p, q);
-    if (d < PR * 2 && d > 0) {
-      const push = (PR * 2 - d) / 2, nx = (q.x - p.x) / d, ny = (q.y - p.y) / d;
-      p.x -= nx * push; p.y -= ny * push; q.x += nx * push; q.y += ny * push;
+    const d = dist(p, q), rr = p.r + q.r;
+    if (d < rr && d > 0) {
+      const overlap = rr - d, nx = (q.x - p.x) / d, ny = (q.y - p.y) / d;
+      const wp = q.r / rr, wq = p.r / rr;      // the big guys barely budge
+      p.x -= nx * overlap * wp; p.y -= ny * overlap * wp;
+      q.x += nx * overlap * wq; q.y += ny * overlap * wq;
       if (p.side !== q.side) tryTackle(p, q) || tryTackle(q, p);
     }
   }
@@ -485,7 +509,7 @@ function step(dt) {
   if (B.holder) {
     const h = B.holder;
     const v = Math.hypot(h.vx, h.vy) || 1;
-    B.x = h.x + h.vx / v * (PR + 4); B.y = h.y + h.vy / v * (PR + 4);
+    B.x = h.x + h.vx / v * (h.r + 5); B.y = h.y + h.vy / v * (h.r + 5);
     B.vx = h.vx; B.vy = h.vy;
   } else {
     if (B.freeCd > 0) B.freeCd -= dt;
@@ -502,7 +526,7 @@ function step(dt) {
     for (const p of M.players) {
       if (p.out || p.down > 0) continue;
       if (B.freeCd > 0 && p === B.lastKick) continue;
-      if (dist(p, B) < PR + BR + 2) {
+      if (dist(p, B) < p.r + BR + 2) {
         const catchProb = 0.55 + p.ag * 0.06;
         if (Math.random() < catchProb) {
           B.holder = p;
@@ -567,94 +591,559 @@ function endMatch() {
   show('screen-post');
 }
 
+/* ---------- character art ----------
+   Every figure is original vector art drawn to an offscreen sprite once per
+   match, facing "up", then rotated to its heading each frame. Race/role looks
+   are derived from the roster's actual roles (kindOf). */
+const KIND_SIZE = {
+  treeman: 1.5, steamroller: 1.5, ogre: 1.45, troll: 1.45, mummy: 1.3,
+  blackorc: 1.18, fanatic: 0.95, goblin: 0.82, halfling: 0.82,
+};
+const SKIN = {
+  halfling: '#e8b88a', human: '#e0a878', elf: '#f0d4b4', orc: '#5a8f3c',
+  blackorc: '#446e2c', goblin: '#7ab648', fanatic: '#7ab648', dwarf: '#dda474',
+  viking: '#e8c096', zombie: '#8fa07a', skeleton: '#e8e4d8', ghoul: '#b8c49a',
+  wight: '#9aa4b8', mummy: '#d8c9a0', treeman: '#7a5a34', ogre: '#d8a070',
+  troll: '#dce8f2', steamroller: '#dda474',
+};
+
+function kindOf(team, role) {
+  const r = role.toLowerCase();
+  if (r.includes('treeman')) return 'treeman';
+  if (r.includes('steam')) return 'steamroller';
+  if (r.includes('ogre')) return 'ogre';
+  if (r.includes('troll')) return 'troll';
+  if (r.includes('black orc')) return 'blackorc';
+  if (r.includes('mummy')) return 'mummy';
+  if (r.includes('skeleton')) return 'skeleton';
+  if (r.includes('zombie')) return 'zombie';
+  if (r.includes('ghoul')) return 'ghoul';
+  if (r.includes('wight')) return 'wight';
+  if (r.includes('fanatic')) return 'fanatic';
+  return { halfling: 'halfling', woodelf: 'elf', human: 'human',
+           orc: r.includes('goblin') ? 'goblin' : 'orc', undead: 'zombie',
+           dwarf: 'dwarf', goblin: 'goblin', viking: 'viking' }[team.id] || 'human';
+}
+
+function shade(hex, f) {             // f in [-1, 1]: darken < 0 < lighten
+  const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16))
+    .map(v => clamp(Math.round(f < 0 ? v * (1 + f) : v + (255 - v) * f), 0, 255));
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+function makeSprite(kind, kit, r) {
+  const pad = Math.ceil(r * 1.2) + 10;
+  const c = document.createElement('canvas');
+  c.width = c.height = (r + pad) * 2 * RES;
+  const s = c.getContext('2d');
+  s.scale(RES, RES);
+  s.translate(r + pad, r + pad);
+  s.lineJoin = 'round';
+  const lw = Math.max(1.4, r * 0.1);
+  s.lineWidth = lw;
+  const skin = SKIN[kind], dark = '#0a0e14', col = kit.color, col2 = kit.color2;
+  const O = (x, y, rr, fill, stroke) => { s.beginPath(); s.arc(x, y, rr, 0, 7);
+    if (fill) { s.fillStyle = fill; s.fill(); } if (stroke) { s.strokeStyle = stroke; s.stroke(); } };
+  const tri = (pts, fill) => { s.beginPath(); s.moveTo(pts[0], pts[1]); s.lineTo(pts[2], pts[3]);
+    s.lineTo(pts[4], pts[5]); s.closePath(); s.fillStyle = fill; s.fill();
+    s.strokeStyle = dark; s.stroke(); };
+  const box = (x, y, w, h, rad, fill) => { s.beginPath(); s.moveTo(x + rad, y);
+    s.arcTo(x + w, y, x + w, y + h, rad); s.arcTo(x + w, y + h, x, y + h, rad);
+    s.arcTo(x, y + h, x, y, rad); s.arcTo(x, y, x + w, y, rad); s.closePath();
+    s.fillStyle = fill; s.fill(); s.strokeStyle = dark; s.stroke(); };
+  const line = (x1, y1, x2, y2, colr, w) => { s.beginPath(); s.moveTo(x1, y1); s.lineTo(x2, y2);
+    s.strokeStyle = colr; if (w) s.lineWidth = w; s.stroke(); s.lineWidth = lw; };
+
+  if (kind === 'steamroller') {      // Grudgecrusher: dwarf war machine
+    box(-r * 0.95, -r * 1.3, r * 1.9, r * 0.66, r * 0.3, '#9aa4b4');
+    for (let x = -r * 0.66; x <= r * 0.67; x += r * 0.33) line(x, -r * 1.24, x, -r * 0.7, '#6b7484');
+    box(-r * 0.82, -r * 0.6, r * 1.64, r * 1.5, r * 0.24, shade(col, -0.08));
+    line(-r * 0.82, -r * 0.05, r * 0.82, -r * 0.05, shade(col, -0.4));
+    [[-r * 0.62, -r * 0.4], [r * 0.62, -r * 0.4], [-r * 0.62, r * 0.7], [r * 0.62, r * 0.7]]
+      .forEach(([x, y]) => O(x, y, r * 0.07, '#20242c'));
+    box(-r * 1.06, -r * 0.25, r * 0.26, r * 0.95, r * 0.1, col2);
+    box(r * 0.8, -r * 0.25, r * 0.26, r * 0.95, r * 0.1, col2);
+    O(r * 0.4, -r * 0.18, r * 0.3, '#3c4450', dark);
+    O(r * 0.4, -r * 0.18, r * 0.13, '#12161e');
+    O(0, r * 0.52, r * 0.34, '#8f97a6', dark);                       // driver's helm
+    line(-r * 0.3, r * 0.52, r * 0.3, r * 0.52, '#2b313c', r * 0.12); // goggles
+    tri([-r * 0.26, r * 0.78, 0, r * 1.2, r * 0.26, r * 0.78], '#c07a3a'); // beard
+    return c;
+  }
+
+  if (kind === 'treeman') {
+    O(0, 0, r, '#6b4a28', dark);                                     // trunk
+    for (let i = 0; i < 9; i++) {                                    // bark ridges
+      const a = i / 9 * Math.PI * 2 + 0.3;
+      line(Math.cos(a) * r * 0.35, Math.sin(a) * r * 0.35,
+           Math.cos(a) * r * 0.92, Math.sin(a) * r * 0.92, '#4e3419');
+    }
+    O(0, 0, r * 0.5, null, '#4e3419');                               // growth ring
+    O(-r * 0.8, -r * 0.5, r * 0.42, '#3f7a37', dark);                // leaf tufts
+    O(r * 0.8, -r * 0.5, r * 0.42, '#3f7a37', dark);
+    O(0, -r * 0.95, r * 0.38, '#4e9440', dark);
+    box(-r * 0.55, r * 0.45, r * 1.1, r * 0.26, r * 0.1, col);       // team band
+    s.fillStyle = '#241708';                                          // carved face
+    s.fillRect(-r * 0.34, -r * 0.3, r * 0.2, r * 0.14);
+    s.fillRect(r * 0.14, -r * 0.3, r * 0.2, r * 0.14);
+    s.fillRect(-r * 0.12, r * 0.05, r * 0.24, r * 0.1);
+    return c;
+  }
+
+  // chainsaw drawn first so the body overlaps its handle
+  if (kind === 'fanatic') {
+    box(-r * 0.16, -r * 2.15, r * 0.32, r * 1.3, r * 0.08, '#9aa4b4');
+    for (let y = -r * 2.05; y < -r * 0.9; y += r * 0.22) {
+      s.fillStyle = '#4b5462';
+      s.fillRect(-r * 0.22, y, r * 0.1, r * 0.1);
+      s.fillRect(r * 0.12, y + r * 0.11, r * 0.1, r * 0.1);
+    }
+    box(-r * 0.3, -r * 1.0, r * 0.6, r * 0.34, r * 0.1, '#e0512e');
+  }
+
+  // ---- torso ----
+  const bare = kind === 'ogre' || kind === 'troll';
+  const torso = bare ? skin
+    : kind === 'mummy' ? '#cfc09a'
+    : kind === 'skeleton' || kind === 'wight' ? shade(col, -0.28)
+    : col;
+  O(0, 0, r, torso, dark);
+  if (!bare && !['mummy', 'skeleton', 'zombie', 'ghoul'].includes(kind))
+    O(0, r * 0.05, r * 0.62, shade(col, 0.12), shade(col, -0.35));   // chest plate
+
+  if (bare) {                                                         // harness straps
+    line(-r * 0.7, -r * 0.55, r * 0.55, r * 0.75, col, r * 0.22);
+    line(r * 0.7, -r * 0.55, -r * 0.55, r * 0.75, col, r * 0.22);
+    O(0, r * 0.1, r * 0.16, col2, dark);
+  }
+  if (kind === 'mummy') {                                             // bandages + sash
+    for (let i = -2; i <= 2; i++)
+      line(-r * 0.9, i * r * 0.32, r * 0.9, i * r * 0.32 + r * 0.1, '#a89a72', r * 0.1);
+    box(-r * 0.6, -r * 0.08, r * 1.2, r * 0.22, r * 0.08, col);
+  }
+  if (kind === 'skeleton') {                                          // ribs
+    s.strokeStyle = '#e8e4d8'; s.lineWidth = r * 0.09;
+    for (let i = 0; i < 3; i++) {
+      s.beginPath();
+      s.moveTo(-r * 0.5, -r * 0.25 + i * r * 0.3);
+      s.quadraticCurveTo(0, -r * 0.1 + i * r * 0.3, r * 0.5, -r * 0.25 + i * r * 0.3);
+      s.stroke();
+    }
+    s.lineWidth = lw;
+  }
+  if (kind === 'zombie') {                                            // stitches + rot
+    line(-r * 0.5, -r * 0.1, r * 0.35, r * 0.25, '#141a10', r * 0.07);
+    for (let i = 0; i < 3; i++)
+      line(-r * 0.35 + i * r * 0.28, -r * 0.22 + i * r * 0.12,
+           -r * 0.25 + i * r * 0.28, r * 0.02 + i * r * 0.12, '#141a10', r * 0.05);
+    O(r * 0.35, r * 0.4, r * 0.16, shade(skin, -0.3), dark);
+  }
+
+  // ---- shoulder pads ----
+  if (!['mummy', 'ghoul', 'skeleton'].includes(kind)) {
+    const padCol = kind === 'blackorc' ? shade(col2, -0.2) : col2;
+    O(-r * 0.8, -r * 0.12, r * 0.42, padCol, dark);
+    if (kind !== 'zombie') O(r * 0.8, -r * 0.12, r * 0.42, padCol, dark); // zombies lost one
+    if (kind === 'orc' || kind === 'blackorc')
+      [[-r * 0.9, -r * 0.3], [-r * 0.7, -r * 0.02], [r * 0.9, -r * 0.3], [r * 0.7, -r * 0.02]]
+        .forEach(([x, y]) => O(x, y, r * 0.06, '#12161e'));
+    if (kind === 'blackorc' || kind === 'troll') {                    // shoulder spikes
+      const spike = kind === 'troll' ? '#eef4fa' : '#c4ccd8';
+      tri([-r * 1.05, -r * 0.3, -r * 1.35, -r * 0.75, -r * 0.72, -r * 0.5], spike);
+      tri([r * 1.05, -r * 0.3, r * 1.35, -r * 0.75, r * 0.72, -r * 0.5], spike);
+    }
+  }
+
+  // ---- fists ----
+  const fist = kind === 'skeleton' ? '#e8e4d8' : skin;
+  O(-r * 0.58, -r * 0.78, r * 0.21, fist, dark);
+  O(r * 0.58, -r * 0.78, r * 0.21, fist, dark);
+  if (kind === 'ghoul') {
+    tri([-r * 0.7, -r * 0.9, -r * 0.58, -r * 1.18, -r * 0.46, -r * 0.9], '#dfe6d0');
+    tri([r * 0.46, -r * 0.9, r * 0.58, -r * 1.18, r * 0.7, -r * 0.9], '#dfe6d0');
+  }
+
+  // ---- head ----
+  const hy = kind === 'ghoul' ? -r * 0.45 : -r * 0.3;
+  const hr = r * 0.5;
+  O(0, hy, hr, skin, dark);
+  const eye = (dx, colr) => { s.fillStyle = colr;
+    s.beginPath(); s.arc(dx, hy - hr * 0.45, hr * 0.14, 0, 7); s.fill(); };
+
+  if (kind === 'human' || kind === 'dwarf' || kind === 'viking' || kind === 'wight') {
+    O(0, hy, hr * 1.08, kind === 'wight' ? '#39414f' : '#aeb6c4', dark);       // helmet
+    box(-hr * 0.62, hy - hr * 0.82, hr * 1.24, hr * 0.55, hr * 0.2, skin);     // visor
+    if (kind === 'wight') {
+      s.shadowColor = '#7ef0ff'; s.shadowBlur = 6;
+      eye(-hr * 0.3, '#9ef4ff'); eye(hr * 0.3, '#9ef4ff'); s.shadowBlur = 0;
+    } else { eye(-hr * 0.3, '#12161e'); eye(hr * 0.3, '#12161e'); }
+    if (kind === 'human') box(-hr * 0.15, hy - hr * 0.2, hr * 0.3, hr * 1.15, hr * 0.12, col2);
+    if (kind === 'viking') {
+      tri([-hr * 1.0, hy + hr * 0.1, -hr * 1.75, hy - hr * 0.75, -hr * 0.55, hy - hr * 0.4], '#ded8c8');
+      tri([hr * 1.0, hy + hr * 0.1, hr * 1.75, hy - hr * 0.75, hr * 0.55, hy - hr * 0.4], '#ded8c8');
+    }
+    if (kind === 'dwarf')
+      tri([-hr * 0.72, hy - hr * 0.15, 0, hy - hr * 2.2, hr * 0.72, hy - hr * 0.15], '#c07a3a');
+  } else if (kind === 'elf') {
+    O(0, hy, hr * 1.06, col2, dark);                                            // hood
+    tri([-hr * 0.32, hy + hr * 0.8, 0, hy + hr * 1.8, hr * 0.32, hy + hr * 0.8], col2);
+    box(-hr * 0.55, hy - hr * 0.8, hr * 1.1, hr * 0.62, hr * 0.24, skin);
+    eye(-hr * 0.26, '#12401e'); eye(hr * 0.26, '#12401e');
+  } else if (kind === 'halfling') {
+    s.beginPath(); s.arc(0, hy, hr * 1.04, -0.25, Math.PI + 0.25);              // curly mop
+    s.fillStyle = '#8a5a2e'; s.fill(); s.strokeStyle = dark; s.stroke();
+    eye(-hr * 0.3, '#12161e'); eye(hr * 0.3, '#12161e');
+    O(-hr * 0.55, hy - hr * 0.1, hr * 0.14, '#d98a6a');                          // rosy cheeks
+    O(hr * 0.55, hy - hr * 0.1, hr * 0.14, '#d98a6a');
+  } else if (kind === 'orc' || kind === 'blackorc') {
+    O(0, hy - hr * 0.5, hr * 0.66, skin, dark);                                  // jutting jaw
+    tri([-hr * 0.5, hy - hr * 0.75, -hr * 0.62, hy - hr * 1.2, -hr * 0.25, hy - hr * 0.85], '#e8e4d8');
+    tri([hr * 0.5, hy - hr * 0.75, hr * 0.62, hy - hr * 1.2, hr * 0.25, hy - hr * 0.85], '#e8e4d8');
+    eye(-hr * 0.3, '#e04a2e'); eye(hr * 0.3, '#e04a2e');
+    if (kind === 'blackorc') box(-hr * 0.7, hy + hr * 0.15, hr * 1.4, hr * 0.5, hr * 0.2, '#4b5462');
+  } else if (kind === 'goblin' || kind === 'fanatic') {
+    tri([-hr * 0.85, hy, -hr * 2.0, hy - hr * 0.4, -hr * 0.75, hy + hr * 0.5], skin); // ears
+    tri([hr * 0.85, hy, hr * 2.0, hy - hr * 0.4, hr * 0.75, hy + hr * 0.5], skin);
+    O(-hr * 0.3, hy - hr * 0.4, hr * 0.2, '#f4f4f0');
+    O(hr * 0.3, hy - hr * 0.4, hr * 0.2, '#f4f4f0');
+    eye(-hr * 0.3, '#12161e'); eye(hr * 0.3, '#12161e');
+    if (kind === 'fanatic') { s.fillStyle = '#e0512e';                           // mad crest
+      s.beginPath(); s.arc(0, hy, hr * 0.9, Math.PI + 0.5, 2 * Math.PI - 0.5); s.fill(); }
+  } else if (kind === 'skeleton') {
+    O(-hr * 0.3, hy - hr * 0.35, hr * 0.2, '#141a10');
+    O(hr * 0.3, hy - hr * 0.35, hr * 0.2, '#141a10');
+    tri([0, hy - hr * 0.05, -hr * 0.1, hy + hr * 0.18, hr * 0.1, hy + hr * 0.18], '#c9c2b0');
+    line(-hr * 0.35, hy + hr * 0.55, hr * 0.35, hy + hr * 0.55, '#141a10', r * 0.05);
+    for (let i = -2; i <= 2; i++)
+      line(i * hr * 0.16, hy + hr * 0.42, i * hr * 0.16, hy + hr * 0.68, '#141a10', r * 0.03);
+  } else if (kind === 'zombie') {
+    eye(-hr * 0.3, '#f4f4f0'); eye(hr * 0.32, '#141a10');                        // mismatched
+    line(-hr * 0.3, hy + hr * 0.5, hr * 0.4, hy + hr * 0.35, '#141a10', r * 0.05);
+    line(-hr * 0.5, hy - hr * 0.55, hr * 0.05, hy - hr * 0.8, '#141a10', r * 0.05);
+  } else if (kind === 'ghoul') {
+    eye(-hr * 0.3, '#141a10'); eye(hr * 0.3, '#141a10');
+    O(-hr * 0.3, hy - hr * 0.45, hr * 0.06, '#cfe08a');
+    O(hr * 0.3, hy - hr * 0.45, hr * 0.06, '#cfe08a');
+    for (let i = 0; i < 3; i++) O(0, r * (0.35 + i * 0.22), r * 0.07, shade(skin, -0.35));
+  } else if (kind === 'mummy') {
+    for (let i = -1; i <= 1; i++)
+      line(-hr, hy + i * hr * 0.4, hr, hy + i * hr * 0.4 + hr * 0.15, '#a89a72', r * 0.08);
+    s.shadowColor = '#a7f070'; s.shadowBlur = 5;
+    eye(-hr * 0.28, '#a7f070'); eye(hr * 0.28, '#a7f070'); s.shadowBlur = 0;
+  } else if (bare) {                                                              // ogre / troll
+    s.beginPath(); s.arc(0, hy, hr * 1.05, 0.25, Math.PI - 0.25);                 // skullcap
+    s.fillStyle = col; s.fill(); s.strokeStyle = dark; s.stroke();
+    eye(-hr * 0.3, '#12161e'); eye(hr * 0.3, '#12161e');
+    tri([-hr * 0.4, hy - hr * 0.6, -hr * 0.5, hy - hr * 0.95, -hr * 0.2, hy - hr * 0.65], '#e8e4d8');
+    tri([hr * 0.4, hy - hr * 0.6, hr * 0.5, hy - hr * 0.95, hr * 0.2, hy - hr * 0.65], '#e8e4d8');
+    if (kind === 'troll') O(0, hy - hr * 0.15, hr * 0.18, '#7aa8d8');             // frosty nose
+  } else {
+    eye(-hr * 0.3, '#12161e'); eye(hr * 0.3, '#12161e');
+  }
+  return c;
+}
+
+/* ---------- stadium art ---------- */
+function buildStadium(variant) {
+  const cw = W + 2 * MARGIN, ch = H + 2 * MARGIN;
+  const c = document.createElement('canvas');
+  c.width = cw * RES; c.height = ch * RES;
+  const s = c.getContext('2d');
+  s.scale(RES, RES); s.translate(MARGIN, MARGIN);
+
+  // concourse + terraces
+  s.fillStyle = '#0a0e15'; s.fillRect(-MARGIN, -MARGIN, cw, ch);
+  for (let i = 0; i < 6; i++) {
+    const inset = 14 + i * 11;
+    s.strokeStyle = i % 2 ? '#151b26' : '#12171f';
+    s.lineWidth = 10;
+    s.strokeRect(-inset, -inset, W + 2 * inset, H + 2 * inset);
+  }
+  // crowd (each build differs -> alternating the two frames animates the crowd)
+  const palette = [M.teams[0].color, M.teams[0].color2, M.teams[1].color, M.teams[1].color2,
+                   '#cfd6e4', '#8fa3c4', '#d9a441', '#77809a', '#5a6478'];
+  for (let row = 0; row < 6; row++) {
+    const inset = 14 + row * 11;
+    const x0 = -inset, y0 = -inset, x1 = W + inset, y1 = H + inset;
+    const dot = (x, y) => {
+      if (Math.random() < 0.18) return;                    // empty seats
+      s.fillStyle = palette[(Math.random() * palette.length) | 0];
+      s.beginPath(); s.arc(x + rand(-1.5, 1.5), y + rand(-1.5, 1.5), rand(2, 3.1), 0, 7); s.fill();
+      if (Math.random() < 0.1) { s.fillStyle = 'rgba(255,255,255,.5)';
+        s.beginPath(); s.arc(x, y - 2, 1.1, 0, 7); s.fill(); }   // waving scarves
+    };
+    for (let x = x0; x <= x1; x += 9) { dot(x, y0); dot(x, y1); }
+    for (let y = y0; y <= y1; y += 9) { dot(x0, y); dot(x1, y); }
+  }
+  // supporter banners
+  s.textAlign = 'center'; s.font = 'bold 24px monospace';
+  s.fillStyle = 'rgba(10,13,18,.78)';
+  s.fillRect(W / 2 - 200, -MARGIN + 10, 400, 30);
+  s.fillRect(W / 2 - 200, H + MARGIN - 40, 400, 30);
+  s.fillStyle = M.teams[1].color2;
+  s.fillText(M.teams[1].name.toUpperCase(), W / 2, -MARGIN + 32);
+  s.fillStyle = M.teams[0].color2;
+  s.fillText(M.teams[0].name.toUpperCase(), W / 2, H + MARGIN - 18);
+  s.save(); s.translate(-MARGIN + 32, H / 2); s.rotate(-Math.PI / 2);
+  s.fillStyle = 'rgba(10,13,18,.78)'; s.fillRect(-190, -15, 380, 30);
+  s.fillStyle = '#d9a441'; s.fillText('★ BRUTAL BOWL ARENA ★', 0, 7); s.restore();
+  s.save(); s.translate(W + MARGIN - 32, H / 2); s.rotate(Math.PI / 2);
+  s.fillStyle = 'rgba(10,13,18,.78)'; s.fillRect(-190, -15, 380, 30);
+  s.fillStyle = '#d9a441'; s.fillText('MATCH DAY ' + (save.round + 1), 0, 7); s.restore();
+  // floodlights
+  for (const [fx, fy] of [[-MARGIN + 26, -MARGIN + 26], [W + MARGIN - 26, -MARGIN + 26],
+                          [-MARGIN + 26, H + MARGIN - 26], [W + MARGIN - 26, H + MARGIN - 26]]) {
+    const g = s.createRadialGradient(fx, fy, 4, fx, fy, 190);
+    g.addColorStop(0, 'rgba(255,244,214,.16)'); g.addColorStop(1, 'rgba(255,244,214,0)');
+    s.fillStyle = g; s.beginPath(); s.arc(fx, fy, 190, 0, 7); s.fill();
+    s.fillStyle = '#2b313c'; s.beginPath(); s.arc(fx, fy, 11, 0, 7); s.fill();
+    s.strokeStyle = '#12161e'; s.lineWidth = 2; s.stroke();
+    for (const [lx, ly] of [[-4, -4], [4, -4], [-4, 4], [4, 4]]) {
+      s.fillStyle = '#fff2cc'; s.beginPath(); s.arc(fx + lx, fy + ly, 2.4, 0, 7); s.fill();
+    }
+  }
+
+  // pitch floor: worn steel plates
+  for (let ty = 0; ty < 10; ty++) for (let tx = 0; tx < 8; tx++) {
+    const x = tx * 80, y = ty * 96;
+    s.fillStyle = (tx + ty) % 2 ? '#1c2430' : '#1a212c';
+    s.fillRect(x, y, 80, 96);
+    if (Math.random() < 0.3) { s.fillStyle = 'rgba(255,255,255,.015)'; s.fillRect(x, y, 80, 96); }
+  }
+  s.strokeStyle = '#242e3e'; s.lineWidth = 1.5;
+  for (let y = 0; y <= H; y += 96) { s.beginPath(); s.moveTo(0, y); s.lineTo(W, y); s.stroke(); }
+  for (let x = 0; x <= W; x += 80) { s.beginPath(); s.moveTo(x, 0); s.lineTo(x, H); s.stroke(); }
+  s.fillStyle = '#2e3a4e';
+  for (let y = 0; y <= H; y += 96) for (let x = 0; x <= W; x += 80) {
+    s.beginPath(); s.arc(x + 6, y + 6, 2.6, 0, 7); s.fill();
+  }
+  for (let i = 0; i < 90; i++) {                              // scuffs and skid marks
+    const x = rand(WALL, W - WALL), y = rand(WALL, H - WALL);
+    const a = rand(0, Math.PI * 2), l = rand(6, 26);
+    s.strokeStyle = 'rgba(255,255,255,' + rand(0.015, 0.05).toFixed(3) + ')';
+    s.lineWidth = rand(1, 2.6);
+    s.beginPath(); s.moveTo(x, y); s.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); s.stroke();
+  }
+  // markings
+  s.strokeStyle = '#3d4f6e'; s.lineWidth = 3;
+  s.beginPath(); s.moveTo(WALL, H / 2); s.lineTo(W - WALL, H / 2); s.stroke();
+  s.beginPath(); s.arc(W / 2, H / 2, 84, 0, 7); s.stroke();
+  s.beginPath(); s.arc(W / 2, WALL, 130, 0, Math.PI); s.stroke();          // goal creases
+  s.beginPath(); s.arc(W / 2, H - WALL, 130, Math.PI, 2 * Math.PI); s.stroke();
+  // centre emblem: riveted gear + star
+  s.save(); s.translate(W / 2, H / 2); s.globalAlpha = 0.5;
+  s.fillStyle = '#232c3c';
+  for (let i = 0; i < 8; i++) { s.rotate(Math.PI / 4); s.fillRect(-7, -46, 14, 14); }
+  s.beginPath(); s.arc(0, 0, 40, 0, 7); s.fill();
+  s.strokeStyle = '#d9a441'; s.lineWidth = 2.5;
+  s.beginPath(); s.arc(0, 0, 40, 0, 7); s.stroke();
+  s.fillStyle = '#d9a441'; s.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 12 : 27;
+    s[i ? 'lineTo' : 'moveTo'](Math.cos(a) * rr, Math.sin(a) * rr);
+  }
+  s.closePath(); s.fill();
+  s.restore();
+
+  // walls
+  s.fillStyle = '#3f4b60';
+  s.fillRect(-6, -6, W + 12, WALL + 6); s.fillRect(-6, H - WALL, W + 12, WALL + 6);
+  s.fillRect(-6, 0, WALL + 6, H); s.fillRect(W - WALL, 0, WALL + 6, H);
+  s.fillStyle = '#5a6d8c';
+  s.fillRect(WALL - 4, WALL - 4, W - 2 * WALL + 8, 4);
+  s.fillRect(WALL - 4, H - WALL, W - 2 * WALL + 8, 4);
+  s.fillRect(WALL - 4, WALL, 4, H - 2 * WALL);
+  s.fillRect(W - WALL, WALL, 4, H - 2 * WALL);
+  s.fillStyle = '#2b3444';                                     // wall bolts
+  for (let x = 40; x < W; x += 56) {
+    s.beginPath(); s.arc(x, WALL / 2, 3, 0, 7); s.fill();
+    s.beginPath(); s.arc(x, H - WALL / 2, 3, 0, 7); s.fill();
+  }
+  for (let y = 40; y < H; y += 56) {
+    s.beginPath(); s.arc(WALL / 2, y, 3, 0, 7); s.fill();
+    s.beginPath(); s.arc(W - WALL / 2, y, 3, 0, 7); s.fill();
+  }
+  // hazard chevrons beside the goal mouths
+  for (const gy of [0, H - WALL]) for (const dir of [-1, 1]) {
+    const sx = W / 2 + dir * GOAL_W / 2, len = 52;
+    const bx0 = Math.min(sx, sx + dir * len);
+    s.save(); s.beginPath(); s.rect(bx0, gy, len, WALL); s.clip();
+    for (let i = -2; i < 8; i++) {
+      s.fillStyle = i % 2 ? '#d9a441' : '#171b22';
+      const bx = bx0 + i * 12;
+      s.beginPath();
+      s.moveTo(bx, gy + WALL); s.lineTo(bx + 8, gy);
+      s.lineTo(bx + 16, gy); s.lineTo(bx + 8, gy + WALL);
+      s.closePath(); s.fill();
+    }
+    s.restore();
+  }
+  // goal bays: recessed nets, team-colour bar + glow, posts
+  for (const side of [0, 1]) {                                // 0 = bottom (user's goal to defend)
+    const gy = side ? 0 : H - WALL;
+    const col = M.teams[side ? 1 : 0].color;
+    s.fillStyle = '#0c1017';
+    s.fillRect(W / 2 - GOAL_W / 2, gy, GOAL_W, WALL);
+    s.strokeStyle = '#2b3444'; s.lineWidth = 1;
+    for (let x = W / 2 - GOAL_W / 2; x <= W / 2 + GOAL_W / 2; x += 7) {
+      s.beginPath(); s.moveTo(x, gy); s.lineTo(x, gy + WALL); s.stroke();
+    }
+    for (let y = gy; y <= gy + WALL; y += 7) {
+      s.beginPath(); s.moveTo(W / 2 - GOAL_W / 2, y); s.lineTo(W / 2 + GOAL_W / 2, y); s.stroke();
+    }
+    s.fillStyle = col;
+    s.fillRect(W / 2 - GOAL_W / 2, side ? WALL - 5 : gy, GOAL_W, 5);
+    const gy2 = side ? WALL : H - WALL;
+    const glow = s.createLinearGradient(0, gy2, 0, gy2 + (side ? 46 : -46));
+    glow.addColorStop(0, col + '55'); glow.addColorStop(1, col + '00');
+    s.fillStyle = glow;
+    s.fillRect(W / 2 - GOAL_W / 2 - 8, side ? WALL : H - WALL - 46, GOAL_W + 16, 46);
+    s.fillStyle = '#aeb6c4';
+    s.fillRect(W / 2 - GOAL_W / 2 - 7, side ? 0 : H - WALL, 7, WALL);
+    s.fillRect(W / 2 + GOAL_W / 2, side ? 0 : H - WALL, 7, WALL);
+  }
+  // vignette
+  const vg = s.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.75);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.30)');
+  s.fillStyle = vg; s.fillRect(-MARGIN, -MARGIN, cw, ch);
+  return c;
+}
+
 /* ---------- rendering ---------- */
 function draw() {
   const B = M.ball;
-  // steel floor
-  cx.fillStyle = '#1b222e'; cx.fillRect(0, 0, W, H);
-  cx.strokeStyle = '#232c3c'; cx.lineWidth = 1;
-  for (let y = 0; y <= H; y += 96) { cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke(); }
-  for (let x = 0; x <= W; x += 96) { cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, H); cx.stroke(); }
-  // rivets
-  cx.fillStyle = '#2e3a4e';
-  for (let y = 48; y < H; y += 96) for (let x = 48; x < W; x += 96) { cx.beginPath(); cx.arc(x, y, 3, 0, 7); cx.fill(); }
-  // centre line + circle
-  cx.strokeStyle = '#3a4a66'; cx.lineWidth = 3;
-  cx.beginPath(); cx.moveTo(WALL, H / 2); cx.lineTo(W - WALL, H / 2); cx.stroke();
-  cx.beginPath(); cx.arc(W / 2, H / 2, 80, 0, 7); cx.stroke();
-  // walls
-  cx.fillStyle = '#46536a';
-  cx.fillRect(0, 0, W, WALL); cx.fillRect(0, H - WALL, W, WALL);
-  cx.fillRect(0, 0, WALL, H); cx.fillRect(W - WALL, 0, WALL, H);
-  cx.fillStyle = '#5a6d8c';
-  cx.fillRect(0, WALL - 4, W, 4); cx.fillRect(0, H - WALL, W, 4);
-  // goals (glow slots)
-  for (const [side, y] of [[1, 0], [0, H - WALL]]) {
-    const gy = side === 1 ? 0 : H - WALL;
-    cx.fillStyle = side === 1 ? M.teams[1].color : M.teams[0].color;
-    cx.fillRect(W / 2 - GOAL_W / 2, gy, GOAL_W, WALL);
-    cx.fillStyle = 'rgba(255,255,255,.25)';
-    cx.fillRect(W / 2 - GOAL_W / 2, gy + (side === 1 ? WALL - 5 : 0), GOAL_W, 5);
+  cx.setTransform(RES, 0, 0, RES, MARGIN * RES, MARGIN * RES);
+  const flick = M.phase === 'goal' ? 120 : 700;                // crowd goes wild on goals
+  const bg = M.bg[Math.floor(performance.now() / flick) % 2];
+  cx.drawImage(bg, -MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
+
+  if (M.phase === 'goal') {                                     // celebration flash
+    cx.fillStyle = 'rgba(255,240,200,' + (0.12 * Math.max(0, M.phaseT - 0.6)).toFixed(3) + ')';
+    cx.fillRect(-MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
   }
-  // players
-  for (const p of M.players) {
-    if (p.out) continue;
-    const col = M.kits[p.side].color;
-    const col2 = M.kits[p.side].color2;
+
+  // players back-to-front so the big guys overlap naturally
+  const ps = M.players.filter(p => !p.out).sort((a, b) => (a.y - b.y) || (b.r - a.r));
+  for (const p of ps) {
+    const spr = p.sprite, sw = spr.width / RES;
+    cx.fillStyle = 'rgba(0,0,0,.42)';
+    cx.beginPath(); cx.ellipse(p.x + 3, p.y + 5, p.r * 0.95, p.r * 0.6, 0, 0, 7); cx.fill();
     cx.save();
-    if (p.down > 0) cx.globalAlpha = 0.55;
-    // shadow
-    cx.fillStyle = 'rgba(0,0,0,.4)';
-    cx.beginPath(); cx.ellipse(p.x + 3, p.y + 5, PR, PR * 0.6, 0, 0, 7); cx.fill();
-    // body
-    cx.fillStyle = col;
-    cx.beginPath(); cx.arc(p.x, p.y, PR, 0, 7); cx.fill();
-    cx.strokeStyle = '#0c1017'; cx.lineWidth = 2; cx.stroke();
-    // helmet shine
-    cx.fillStyle = col2;
-    cx.beginPath(); cx.arc(p.x - 4, p.y - 4, PR * 0.45, 0, 7); cx.fill();
-    if (p === M.active) {
-      cx.strokeStyle = '#ffe9b0'; cx.lineWidth = 3;
-      cx.beginPath(); cx.arc(p.x, p.y, PR + 5, 0, 7); cx.stroke();
-      cx.fillStyle = '#ffe9b0'; cx.font = 'bold 12px monospace'; cx.textAlign = 'center';
-      cx.fillText(p.name.split(' ')[0].toUpperCase(), p.x, p.y - PR - 10);
+    cx.translate(p.x, p.y);
+    if (p.down > 0) { cx.globalAlpha = 0.6; cx.rotate(p.face); cx.scale(1, 0.82); }
+    else cx.rotate(p.face + Math.PI / 2);
+    cx.drawImage(spr, -sw / 2, -sw / 2, sw, sw);
+    cx.restore();
+    if (p.down > 0) {
+      cx.fillStyle = '#ffe9b0'; cx.font = 'bold 13px monospace'; cx.textAlign = 'center';
+      cx.fillText('✶ ✶', p.x, p.y - p.r - 6);                   // seeing stars
     }
     if (M.ball.holder === p) {
-      cx.strokeStyle = '#fff'; cx.lineWidth = 1.5;
-      cx.beginPath(); cx.arc(p.x, p.y, PR + 2, 0, 7); cx.stroke();
+      cx.strokeStyle = 'rgba(255,255,255,.9)'; cx.lineWidth = 2;
+      cx.beginPath(); cx.arc(p.x, p.y, p.r + 3, 0, 7); cx.stroke();
     }
-    cx.restore();
+    if (p === M.active) {
+      cx.strokeStyle = '#ffe9b0'; cx.lineWidth = 3;
+      cx.beginPath(); cx.arc(p.x, p.y, p.r + 6, 0, 7); cx.stroke();
+      cx.fillStyle = '#ffe9b0'; cx.font = 'bold 13px monospace'; cx.textAlign = 'center';
+      cx.fillText(p.name.split(' ')[0].toUpperCase(), p.x, p.y - p.r - 12);
+    }
   }
-  // ball
-  cx.fillStyle = 'rgba(0,0,0,.4)';
+
+  // ball (glows when loose)
+  cx.fillStyle = 'rgba(0,0,0,.42)';
   cx.beginPath(); cx.ellipse(B.x + 2, B.y + 4, BR, BR * 0.6, 0, 0, 7); cx.fill();
+  if (!B.holder) {
+    const g = cx.createRadialGradient(B.x, B.y, 2, B.x, B.y, BR * 3);
+    g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    cx.fillStyle = g; cx.beginPath(); cx.arc(B.x, B.y, BR * 3, 0, 7); cx.fill();
+  }
   const grad = cx.createRadialGradient(B.x - 2, B.y - 2, 1, B.x, B.y, BR);
   grad.addColorStop(0, '#ffffff'); grad.addColorStop(1, '#8fa3c4');
   cx.fillStyle = grad;
   cx.beginPath(); cx.arc(B.x, B.y, BR, 0, 7); cx.fill();
   cx.strokeStyle = '#0c1017'; cx.lineWidth = 1.5; cx.stroke();
+  cx.strokeStyle = 'rgba(20,26,36,.8)'; cx.lineWidth = 1;       // panel seam
+  cx.beginPath(); cx.arc(B.x, B.y, BR * 0.55, 0, 7); cx.stroke();
 
   // phase banners
   if (M.phase === 'kickoff' || M.phase === 'goal' || M.phase === 'halftime') {
-    cx.fillStyle = 'rgba(10,13,18,.55)'; cx.fillRect(0, H / 2 - 60, W, 120);
-    cx.fillStyle = '#ffe9b0'; cx.font = 'bold 44px monospace'; cx.textAlign = 'center';
+    cx.fillStyle = 'rgba(10,13,18,.62)';
+    cx.fillRect(-MARGIN, H / 2 - 60, W + 2 * MARGIN, 120);
+    cx.strokeStyle = '#d9a441'; cx.lineWidth = 2;
+    cx.strokeRect(-MARGIN, H / 2 - 60, W + 2 * MARGIN, 120);
+    cx.fillStyle = '#ffe9b0'; cx.font = 'bold 46px monospace'; cx.textAlign = 'center';
     cx.fillText(M.phase === 'goal' ? 'GOAL!' : M.phase === 'halftime' ? 'HALF TIME' : 'READY…',
-      W / 2, H / 2 + 14);
+      W / 2, H / 2 + 15);
+  }
+
+  // Auto Coach indicator
+  if (M.autoCoach) {
+    cx.fillStyle = 'rgba(89,214,230,.95)';
+    cx.font = 'bold 15px monospace'; cx.textAlign = 'left';
+    cx.fillText('◉ AUTO COACH', WALL + 8, WALL + 30);
   }
 }
 
 function loop(t) {
   if (!M || M.phase === 'ended') return;
-  const dt = Math.min(0.05, (t - lastTime) / 1000);
+  const frame = Math.min(0.05, (t - lastTime) / 1000);
   lastTime = t;
-  step(dt);
+  // The speed dial scales how much match-time we simulate per real frame, which
+  // shortens/lengthens the whole game. Sub-step so physics stays stable when fast.
+  let acc = Math.min(0.25, frame * (save.speed || 1));
+  do {
+    const s = Math.min(0.05, acc);
+    step(s);
+    if (!M || M.phase === 'ended') return;
+    acc -= s;
+  } while (acc > 1e-4);
   requestAnimationFrame(loop);
 }
 
 /* debug/testing hook: step the sim manually from the console */
 window.__bb = { step: dt => step(dt), state: () => M, save: () => save };
 
+/* ---------- Auto Coach + speed dial ---------- */
+function setAutoCoach(on) {
+  on = !!on;
+  if (M) M.autoCoach = on;
+  save.autoCoach = on; persist();
+  const b = $('btn-autocoach');
+  if (b) { b.textContent = 'AUTO COACH: ' + (on ? 'ON' : 'OFF'); b.classList.toggle('on', on); }
+  const help = $('controls-help');
+  if (help) help.textContent = on
+    ? 'AUTO COACH ON — the team plays itself. Press the button (or P) to take control back.'
+    : 'MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player · P: auto coach';
+}
+
+function fmtClock(sec) {
+  const m = Math.floor(sec / 60), s = Math.round(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+function estMatchSeconds(speed) { return (2 * HALF_LEN) / speed; }  // real seconds for a full match
+function syncSpeedReadout() {
+  const el = $('speed-readout');
+  if (el) el.textContent = save.speed.toFixed(1) + '× · ~' + fmtClock(estMatchSeconds(save.speed));
+}
+function syncMatchControls() {
+  const dial = $('speed-dial');
+  if (dial) dial.value = save.speed;
+  syncSpeedReadout();
+  setAutoCoach(!!(M && M.autoCoach));
+}
+
 /* ---------- wiring ---------- */
+$('btn-autocoach').onclick = () => setAutoCoach(!(M && M.autoCoach));
+{
+  const dial = $('speed-dial');
+  dial.value = save.speed;
+  dial.addEventListener('input', e => {
+    save.speed = clamp(Number(e.target.value) || 1, 0.5, 4);
+    persist(); syncSpeedReadout();
+  });
+  syncSpeedReadout();
+}
 $('btn-start').onclick = () => {
   if (save.teamId) { renderManage(); show('screen-manage'); }
   else { renderSelect(); show('screen-select'); }

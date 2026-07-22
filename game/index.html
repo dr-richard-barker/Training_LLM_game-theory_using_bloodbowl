@@ -72,10 +72,18 @@
       <span id="hud-away"></span>
       <span id="hud-clock">1st 90</span>
     </div>
-    <canvas id="pitch" width="640" height="960"></canvas>
+    <canvas id="pitch"></canvas>
     <div id="ticker"></div>
+    <div id="match-controls">
+      <button class="btn" id="btn-autocoach" title="Let the AI coach play your team so you can take a break (P)">AUTO COACH: OFF</button>
+      <div class="dial" title="Higher speed = a faster, shorter match">
+        <label for="speed-dial">SPEED</label>
+        <input type="range" id="speed-dial" min="0.5" max="4" step="0.5" value="1" aria-label="Match speed and length">
+        <span id="speed-readout">1.0× · ~3:00</span>
+      </div>
+    </div>
     <div id="controls-help">
-      MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player
+      MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player · P: auto coach
     </div>
   </section>
 
