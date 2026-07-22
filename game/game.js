@@ -1387,7 +1387,7 @@ function fmtClock(sec) {
 function estMatchSeconds(speed) { return (2 * HALF_LEN) / speed; }  // real seconds for a full match
 function syncSpeedReadout() {
   const el = $('speed-readout');
-  if (el) el.textContent = save.speed.toFixed(1) + '× · ~' + fmtClock(estMatchSeconds(save.speed));
+  if (el) el.textContent = (+save.speed.toFixed(2)) + '× · ~' + fmtClock(estMatchSeconds(save.speed));
 }
 function syncMatchControls() {
   const dial = $('speed-dial');
@@ -1403,7 +1403,7 @@ $('btn-autocoach').onclick = () => setAutoCoach(!(M && M.autoCoach));
   const dial = $('speed-dial');
   dial.value = save.speed;
   dial.addEventListener('input', e => {
-    save.speed = clamp(Number(e.target.value) || 1, 0.5, 4);
+    save.speed = clamp(Number(e.target.value) || 1, 0.25, 4);
     persist(); syncSpeedReadout();
   });
   syncSpeedReadout();
