@@ -160,5 +160,12 @@ html, body {
   background: radial-gradient(circle at 34% 30%, #eaf6ff 0%, #59d6e6 55%, #227f8c 100%);
 }
 #speed-readout { color: var(--accent); font-size: .82rem; min-width: 96px; }
+.dial select {
+  font: inherit; color: var(--chrome-hi); cursor: pointer;
+  background: linear-gradient(180deg, #33405a, #1a2130);
+  border: 2px solid; border-color: #7d8ca6 #2a3140 #1a2028 #7d8ca6;
+  border-radius: 6px; padding: 6px 10px;
+}
+.dial select:hover { filter: brightness(1.2); }
 
 .post-score { font-size: 2.2rem; color: var(--brass); margin: 12px 0; text-shadow: 0 2px 0 #0a0d12; }

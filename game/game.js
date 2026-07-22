@@ -9,7 +9,7 @@ const SAVE_KEY = 'brutalbowl_save_v1';
 
 function defaultSave() {
   return { teamId: null, credits: 20, upgrades: {}, results: [], round: 0,
-           speed: 1, autoCoach: false };
+           speed: 1, autoCoach: false, backdrop: 'steel' };
 }
 let save = loadSave();
 function loadSave() {
@@ -19,6 +19,7 @@ function loadSave() {
       // migrate older saves that predate the speed / auto-coach settings
       if (typeof s.speed !== 'number' || !isFinite(s.speed)) s.speed = 1;
       s.autoCoach = !!s.autoCoach;
+      if (typeof s.backdrop !== 'string') s.backdrop = 'steel';
       return s;
     }
   } catch (e) { /* corrupted save -> start fresh */ }
@@ -217,7 +218,7 @@ function renderLeague() {
 const W = 640, H = 960, WALL = 22, GOAL_W = 150;
 const PR = 18, BR = 8;               // base player / ball radius (big guys scale up)
 const RES = 2;                       // render supersampling — crisp high-res canvas
-const MARGIN = 84;                   // stadium stands drawn around the pitch
+const MARGIN = 200;                  // stands + scenic backdrop around the pitch
 // seconds per half (override for quick games with ?half=30 in the URL)
 const HALF_LEN = Number(new URLSearchParams(location.search).get('half')) || 90;
 
@@ -843,6 +844,258 @@ function makeSprite(kind, kit, r) {
   return c;
 }
 
+/* ---------- backdrops ----------
+   Selectable scenery drawn around the stadium bowl. All procedural — the
+   game stays a self-contained static page. */
+const BACKDROPS = [
+  ['steel', 'Steel Arena'], ['greyscale', 'Greyscale'], ['teamcolors', 'Team Colours'],
+  ['moon', 'Moon Surface'], ['mars', 'Mars Surface'], ['cyberpunk', 'Cyberpunk City'],
+  ['medieval', 'Medieval City'], ['mountains', 'Mountain Rocks'],
+];
+
+function craterField(s, n, rMin, rMax, floor, rimLight, rimDark) {
+  for (let i = 0; i < n; i++) {
+    const x = rand(-MARGIN, W + MARGIN), y = rand(-MARGIN, H + MARGIN), r = rand(rMin, rMax);
+    s.fillStyle = floor;
+    s.beginPath(); s.arc(x, y, r, 0, 7); s.fill();
+    s.lineWidth = Math.max(1.5, r * 0.14);
+    s.strokeStyle = rimDark;
+    s.beginPath(); s.arc(x, y, r * 0.96, -0.5, 2.1); s.stroke();       // shaded rim
+    s.strokeStyle = rimLight;
+    s.beginPath(); s.arc(x, y, r, Math.PI * 0.72, Math.PI * 1.72); s.stroke(); // sunlit rim
+  }
+}
+
+function grain(s, n, colors) {
+  for (let i = 0; i < n; i++) {
+    s.fillStyle = colors[(Math.random() * colors.length) | 0];
+    s.fillRect(rand(-MARGIN, W + MARGIN), rand(-MARGIN, H + MARGIN), rand(1, 2.6), rand(1, 2.6));
+  }
+}
+
+/* species-flavoured pattern for the "Team Colours" backdrop */
+function speciesPattern(s, team) {
+  const c1 = team.color, c2 = team.color2;
+  s.fillStyle = shade(c1, -0.72);
+  s.fillRect(-MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
+  const each = (n, fn) => { for (let i = 0; i < n; i++)
+    fn(rand(-MARGIN, W + MARGIN), rand(-MARGIN, H + MARGIN)); };
+  switch (team.id) {
+    case 'halfling':                                     // rolling pasture + flowers
+      each(70, (x, y) => { s.strokeStyle = shade(c1, -0.35); s.lineWidth = rand(6, 14);
+        s.beginPath(); s.arc(x, y, rand(18, 46), Math.PI, 2 * Math.PI); s.stroke(); });
+      each(160, (x, y) => { s.fillStyle = Math.random() < 0.5 ? c2 : '#e8d06a';
+        s.beginPath(); s.arc(x, y, rand(1.5, 3), 0, 7); s.fill(); });
+      break;
+    case 'woodelf':                                      // drifting leaves
+      each(220, (x, y) => { s.fillStyle = Math.random() < 0.5 ? shade(c1, -0.2) : shade(c2, -0.25);
+        s.save(); s.translate(x, y); s.rotate(rand(0, 7));
+        s.beginPath(); s.ellipse(0, 0, rand(4, 9), rand(2, 3.5), 0, 0, 7); s.fill(); s.restore(); });
+      break;
+    case 'human':                                        // heraldic stripes + roundels
+      for (let d = -H - MARGIN * 2; d < W + MARGIN * 2; d += 64) {
+        s.strokeStyle = shade(c1, -0.4); s.lineWidth = 26;
+        s.beginPath(); s.moveTo(d, -MARGIN); s.lineTo(d + H + 2 * MARGIN, H + MARGIN); s.stroke();
+      }
+      each(26, (x, y) => { s.strokeStyle = c2; s.lineWidth = 3;
+        s.beginPath(); s.arc(x, y, rand(8, 16), 0, 7); s.stroke(); });
+      break;
+    case 'orc':                                          // jagged teeth rows
+      for (let y = -MARGIN + 30; y < H + MARGIN; y += 74) {
+        s.fillStyle = shade(c1, -0.4);
+        s.beginPath();
+        for (let x = -MARGIN; x < W + MARGIN; x += 30) {
+          s.moveTo(x, y); s.lineTo(x + 15, y - rand(16, 30)); s.lineTo(x + 30, y);
+        }
+        s.fill();
+      }
+      each(40, (x, y) => { s.fillStyle = c2;
+        s.beginPath(); s.arc(x, y, rand(2, 4), 0, 7); s.fill(); });
+      break;
+    case 'undead':                                       // graveyard
+      each(70, (x, y) => { s.fillStyle = shade(c1, -0.35);
+        s.fillRect(x - 7, y - 12, 14, 24);
+        s.beginPath(); s.arc(x, y - 12, 7, Math.PI, 2 * Math.PI); s.fill();
+        s.strokeStyle = shade(c2, -0.3); s.lineWidth = 2;
+        s.beginPath(); s.moveTo(x - 4, y - 6); s.lineTo(x + 4, y - 6);
+        s.moveTo(x, y - 10); s.lineTo(x, y + 2); s.stroke(); });
+      break;
+    case 'dwarf':                                        // ashlar stone + runes
+      for (let y = -MARGIN; y < H + MARGIN; y += 34) {
+        for (let x = -MARGIN + ((y / 34 | 0) % 2) * 30; x < W + MARGIN; x += 60) {
+          s.strokeStyle = shade(c1, -0.45); s.lineWidth = 3;
+          s.strokeRect(x, y, 60, 34);
+        }
+      }
+      each(30, (x, y) => { s.strokeStyle = c2; s.lineWidth = 2.5;
+        s.beginPath(); s.moveTo(x, y - 8); s.lineTo(x, y + 8);
+        s.moveTo(x, y - 2); s.lineTo(x + 7, y - 8); s.moveTo(x, y + 2); s.lineTo(x + 7, y + 8);
+        s.stroke(); });
+      break;
+    case 'goblin':                                       // bolted scrap patches
+      each(90, (x, y) => { const w = rand(18, 52), h = rand(14, 40);
+        s.fillStyle = shade(Math.random() < 0.5 ? c1 : c2, rand(-0.55, -0.2));
+        s.fillRect(x, y, w, h);
+        s.strokeStyle = '#0a0e14'; s.lineWidth = 2; s.strokeRect(x, y, w, h);
+        s.fillStyle = '#20242c';
+        s.beginPath(); s.arc(x + 4, y + 4, 2, 0, 7); s.fill();
+        s.beginPath(); s.arc(x + w - 4, y + h - 4, 2, 0, 7); s.fill(); });
+      break;
+    case 'viking':                                       // icy waves + shields
+      for (let y = -MARGIN + 20; y < H + MARGIN; y += 46) {
+        s.strokeStyle = shade(c2, -0.25); s.lineWidth = 4;
+        s.beginPath();
+        for (let x = -MARGIN; x < W + MARGIN; x += 40)
+          s.quadraticCurveTo(x + 10, y - 14, x + 20, y), s.quadraticCurveTo(x + 30, y + 14, x + 40, y);
+        s.stroke();
+      }
+      each(22, (x, y) => { s.fillStyle = shade(c1, -0.25);
+        s.beginPath(); s.arc(x, y, 12, 0, 7); s.fill();
+        s.strokeStyle = c2; s.lineWidth = 2.5;
+        s.beginPath(); s.arc(x, y, 12, 0, 7); s.moveTo(x - 12, y); s.lineTo(x + 12, y); s.stroke(); });
+      break;
+  }
+}
+
+function drawBackdrop(s, style, teams) {
+  const cw = W + 2 * MARGIN, ch = H + 2 * MARGIN;
+  const full = (fill) => { s.fillStyle = fill; s.fillRect(-MARGIN, -MARGIN, cw, ch); };
+  switch (style) {
+    case 'greyscale': {
+      full('#141416');
+      for (let d = -H - MARGIN * 2; d < W + MARGIN * 2; d += 56) {     // girders
+        s.strokeStyle = '#1d1d21'; s.lineWidth = 18;
+        s.beginPath(); s.moveTo(d, -MARGIN); s.lineTo(d + H + 2 * MARGIN, H + MARGIN); s.stroke();
+      }
+      grain(s, 500, ['#232327', '#0e0e10', '#2c2c30']);
+      break;
+    }
+    case 'teamcolors': {
+      const t = teams[0];
+      if (t) speciesPattern(s, t); else full('#101014');
+      break;
+    }
+    case 'moon': {
+      const g = s.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H);
+      g.addColorStop(0, '#93939a'); g.addColorStop(1, '#7c7c84');
+      s.fillStyle = g; s.fillRect(-MARGIN, -MARGIN, cw, ch);
+      grain(s, 1400, ['#a6a6ae', '#6e6e76', '#88888f', '#5f5f66']);
+      craterField(s, 46, 5, 26, '#74747c', '#b7b7bf', '#55555c');
+      craterField(s, 6, 30, 54, '#6c6c74', '#c0c0c8', '#4e4e55');
+      s.fillStyle = '#3b6fd4';                                          // earthrise
+      s.beginPath(); s.arc(-MARGIN + 52, -MARGIN + 52, 24, 0, 7); s.fill();
+      s.fillStyle = 'rgba(255,255,255,.75)';
+      s.beginPath(); s.ellipse(-MARGIN + 46, -MARGIN + 46, 12, 5, 0.6, 0, 7); s.fill();
+      s.beginPath(); s.ellipse(-MARGIN + 58, -MARGIN + 60, 9, 4, -0.4, 0, 7); s.fill();
+      break;
+    }
+    case 'mars': {
+      const g = s.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H);
+      g.addColorStop(0, '#b5643c'); g.addColorStop(1, '#96502f');
+      s.fillStyle = g; s.fillRect(-MARGIN, -MARGIN, cw, ch);
+      grain(s, 1400, ['#c97a4c', '#8e4526', '#a85a34', '#7c3c20']);
+      for (let i = 0; i < 30; i++) {                                    // wind-blown dunes
+        const x = rand(-MARGIN, W + MARGIN), y = rand(-MARGIN, H + MARGIN);
+        s.strokeStyle = 'rgba(60,25,10,.25)'; s.lineWidth = rand(2, 5);
+        s.beginPath(); s.moveTo(x, y);
+        s.quadraticCurveTo(x + rand(20, 60), y + rand(-14, 14), x + rand(70, 130), y);
+        s.stroke();
+      }
+      craterField(s, 34, 5, 24, '#8e4526', '#d98a5f', '#6b3018');
+      craterField(s, 4, 30, 50, '#84401f', '#e09468', '#5f2a14');
+      break;
+    }
+    case 'cyberpunk': {
+      full('#0b0d16');
+      for (let y = -MARGIN; y < H + MARGIN; y += 76) {                  // rooftops
+        for (let x = -MARGIN; x < W + MARGIN; x += 84) {
+          const w = 84 - rand(10, 26), h = 76 - rand(10, 24);
+          s.fillStyle = ['#141826', '#1b2032', '#10141f'][(Math.random() * 3) | 0];
+          s.fillRect(x, y, w, h);
+          s.strokeStyle = '#05070c'; s.lineWidth = 2; s.strokeRect(x, y, w, h);
+          s.fillStyle = '#2b3040';                                      // AC unit
+          s.fillRect(x + rand(4, w - 14), y + rand(4, h - 14), 9, 9);
+          for (let i = 0; i < 14; i++) {                                // lit windows
+            if (Math.random() < 0.5) continue;
+            s.fillStyle = ['#59d6e6', '#e34fd0', '#e8c15a', '#7ef0ff'][(Math.random() * 4) | 0];
+            s.globalAlpha = rand(0.35, 1);
+            s.fillRect(x + 4 + (i % 5) * (w / 5), y + 5 + ((i / 5) | 0) * 11, 3, 5);
+            s.globalAlpha = 1;
+          }
+        }
+      }
+      for (let i = 0; i < 14; i++) {                                    // neon strips
+        s.strokeStyle = Math.random() < 0.5 ? '#e34fd0' : '#59d6e6';
+        s.shadowColor = s.strokeStyle; s.shadowBlur = 10; s.lineWidth = 2.5;
+        const x = rand(-MARGIN, W + MARGIN), y = rand(-MARGIN, H + MARGIN), l = rand(24, 70);
+        s.beginPath(); s.moveTo(x, y);
+        Math.random() < 0.5 ? s.lineTo(x + l, y) : s.lineTo(x, y + l);
+        s.stroke(); s.shadowBlur = 0;
+      }
+      break;
+    }
+    case 'medieval': {
+      full('#2a241c');
+      grain(s, 700, ['#332c22', '#211c15', '#3a332a']);                 // packed earth
+      for (let y = -MARGIN; y < H + MARGIN; y += 66) {                  // timber rooftops
+        for (let x = -MARGIN; x < W + MARGIN; x += 74) {
+          if (Math.random() < 0.22) continue;                           // lanes between houses
+          const w = 74 - rand(14, 30), h = 66 - rand(14, 28);
+          const roof = ['#8a4a2e', '#a05a32', '#6e4a28', '#9a7c3e', '#7a3a2a'][(Math.random() * 5) | 0];
+          s.fillStyle = shade(roof, rand(-0.2, 0.05));
+          s.fillRect(x, y, w, h);
+          s.strokeStyle = '#171208'; s.lineWidth = 2; s.strokeRect(x, y, w, h);
+          s.strokeStyle = shade(roof, 0.25);                            // roof ridge
+          w > h ? (s.beginPath(), s.moveTo(x + 4, y + h / 2), s.lineTo(x + w - 4, y + h / 2))
+                : (s.beginPath(), s.moveTo(x + w / 2, y + 4), s.lineTo(x + w / 2, y + h - 4));
+          s.stroke();
+        }
+      }
+      for (let i = 0; i < 8; i++) {                                     // watch towers
+        const x = rand(-MARGIN + 30, W + MARGIN - 30), y = rand(-MARGIN + 30, H + MARGIN - 30);
+        s.fillStyle = '#6b6f78'; s.beginPath(); s.arc(x, y, 16, 0, 7); s.fill();
+        s.strokeStyle = '#43464e'; s.lineWidth = 2;
+        for (let a = 0; a < 7; a += 0.8) {
+          s.beginPath(); s.moveTo(x, y);
+          s.lineTo(x + Math.cos(a) * 16, y + Math.sin(a) * 16); s.stroke();
+        }
+        s.fillStyle = '#c0392b'; s.beginPath(); s.arc(x, y, 3, 0, 7); s.fill(); // banner
+      }
+      break;
+    }
+    case 'mountains': {
+      full('#45413b');
+      grain(s, 1300, ['#514c45', '#38342e', '#5c574f']);
+      for (let i = 0; i < 300; i++) {                                   // talus + crags
+        const x = rand(-MARGIN, W + MARGIN), y = rand(-MARGIN, H + MARGIN), r = rand(7, 30);
+        const base = ['#565b63', '#3f444c', '#6a6f78', '#5a5347'][(Math.random() * 4) | 0];
+        s.fillStyle = base;
+        s.beginPath(); s.moveTo(x, y - r);
+        for (let a = 0.9; a < 6.2; a += rand(0.8, 1.4))
+          s.lineTo(x + Math.cos(a) * r * rand(0.6, 1), y + Math.sin(a) * r * rand(0.6, 1));
+        s.closePath(); s.fill();
+        s.strokeStyle = shade(base, -0.4); s.lineWidth = 1.5; s.stroke();
+        s.strokeStyle = shade(base, 0.3);                               // sunlit edge
+        s.beginPath(); s.moveTo(x - r * 0.6, y - r * 0.4); s.lineTo(x, y - r * 0.9); s.stroke();
+      }
+      for (let i = 0; i < 26; i++) {                                    // snow patches
+        s.fillStyle = 'rgba(238,244,250,' + rand(0.25, 0.7).toFixed(2) + ')';
+        const x = rand(-MARGIN, W + MARGIN), y = rand(-MARGIN, H + MARGIN);
+        s.beginPath(); s.ellipse(x, y, rand(5, 16), rand(3, 8), rand(0, 3), 0, 7); s.fill();
+      }
+      break;
+    }
+    default: {                                                           // steel
+      full('#0a0e15');
+      for (let d = -H - MARGIN * 2; d < W + MARGIN * 2; d += 72) {
+        s.strokeStyle = '#0e131c'; s.lineWidth = 20;
+        s.beginPath(); s.moveTo(d, -MARGIN); s.lineTo(d + H + 2 * MARGIN, H + MARGIN); s.stroke();
+      }
+      grain(s, 400, ['#12161f', '#080b11']);
+    }
+  }
+}
+
 /* ---------- stadium art ---------- */
 function buildStadium(variant) {
   const cw = W + 2 * MARGIN, ch = H + 2 * MARGIN;
@@ -851,8 +1104,14 @@ function buildStadium(variant) {
   const s = c.getContext('2d');
   s.scale(RES, RES); s.translate(MARGIN, MARGIN);
 
-  // concourse + terraces
-  s.fillStyle = '#0a0e15'; s.fillRect(-MARGIN, -MARGIN, cw, ch);
+  // scenery around the bowl (user-selectable backdrop)
+  drawBackdrop(s, save.backdrop, M.teams);
+  // stadium bowl shell — separates the stands from the scenery outside
+  s.fillStyle = '#0d1118';
+  s.fillRect(-96, -96, W + 192, H + 192);
+  s.strokeStyle = '#3a4250'; s.lineWidth = 3;
+  s.strokeRect(-96, -96, W + 192, H + 192);
+  // terraces
   for (let i = 0; i < 6; i++) {
     const inset = 14 + i * 11;
     s.strokeStyle = i % 2 ? '#151b26' : '#12171f';
@@ -860,8 +1119,11 @@ function buildStadium(variant) {
     s.strokeRect(-inset, -inset, W + 2 * inset, H + 2 * inset);
   }
   // crowd (each build differs -> alternating the two frames animates the crowd)
-  const palette = [M.teams[0].color, M.teams[0].color2, M.teams[1].color, M.teams[1].color2,
-                   '#cfd6e4', '#8fa3c4', '#d9a441', '#77809a', '#5a6478'];
+  const grey = save.backdrop === 'greyscale';
+  const palette = grey
+    ? ['#c9c9ce', '#9a9aa2', '#6e6e76', '#4a4a52', '#e2e2e6', '#84848c']
+    : [M.teams[0].color, M.teams[0].color2, M.teams[1].color, M.teams[1].color2,
+       '#cfd6e4', '#8fa3c4', '#d9a441', '#77809a', '#5a6478'];
   for (let row = 0; row < 6; row++) {
     const inset = 14 + row * 11;
     const x0 = -inset, y0 = -inset, x1 = W + inset, y1 = H + inset;
@@ -875,24 +1137,25 @@ function buildStadium(variant) {
     for (let x = x0; x <= x1; x += 9) { dot(x, y0); dot(x, y1); }
     for (let y = y0; y <= y1; y += 9) { dot(x0, y); dot(x1, y); }
   }
-  // supporter banners
+  // supporter banners on the bowl shell
+  const bannerCol = (c) => grey ? '#c8c8d0' : c;
   s.textAlign = 'center'; s.font = 'bold 24px monospace';
   s.fillStyle = 'rgba(10,13,18,.78)';
-  s.fillRect(W / 2 - 200, -MARGIN + 10, 400, 30);
-  s.fillRect(W / 2 - 200, H + MARGIN - 40, 400, 30);
-  s.fillStyle = M.teams[1].color2;
-  s.fillText(M.teams[1].name.toUpperCase(), W / 2, -MARGIN + 32);
-  s.fillStyle = M.teams[0].color2;
-  s.fillText(M.teams[0].name.toUpperCase(), W / 2, H + MARGIN - 18);
-  s.save(); s.translate(-MARGIN + 32, H / 2); s.rotate(-Math.PI / 2);
+  s.fillRect(W / 2 - 200, -94, 400, 30);
+  s.fillRect(W / 2 - 200, H + 64, 400, 30);
+  s.fillStyle = bannerCol(M.teams[1].color2);
+  s.fillText(M.teams[1].name.toUpperCase(), W / 2, -72);
+  s.fillStyle = bannerCol(M.teams[0].color2);
+  s.fillText(M.teams[0].name.toUpperCase(), W / 2, H + 86);
+  s.save(); s.translate(-79, H / 2); s.rotate(-Math.PI / 2);
   s.fillStyle = 'rgba(10,13,18,.78)'; s.fillRect(-190, -15, 380, 30);
-  s.fillStyle = '#d9a441'; s.fillText('★ BRUTAL BOWL ARENA ★', 0, 7); s.restore();
-  s.save(); s.translate(W + MARGIN - 32, H / 2); s.rotate(Math.PI / 2);
+  s.fillStyle = bannerCol('#d9a441'); s.fillText('★ BRUTAL BOWL ARENA ★', 0, 7); s.restore();
+  s.save(); s.translate(W + 79, H / 2); s.rotate(Math.PI / 2);
   s.fillStyle = 'rgba(10,13,18,.78)'; s.fillRect(-190, -15, 380, 30);
-  s.fillStyle = '#d9a441'; s.fillText('MATCH DAY ' + (save.round + 1), 0, 7); s.restore();
-  // floodlights
-  for (const [fx, fy] of [[-MARGIN + 26, -MARGIN + 26], [W + MARGIN - 26, -MARGIN + 26],
-                          [-MARGIN + 26, H + MARGIN - 26], [W + MARGIN - 26, H + MARGIN - 26]]) {
+  s.fillStyle = bannerCol('#d9a441'); s.fillText('MATCH DAY ' + (save.round + 1), 0, 7); s.restore();
+  // floodlights on the bowl corners
+  for (const [fx, fy] of [[-110, -110], [W + 110, -110],
+                          [-110, H + 110], [W + 110, H + 110]]) {
     const g = s.createRadialGradient(fx, fy, 4, fx, fy, 190);
     g.addColorStop(0, 'rgba(255,244,214,.16)'); g.addColorStop(1, 'rgba(255,244,214,0)');
     s.fillStyle = g; s.beginPath(); s.arc(fx, fy, 190, 0, 7); s.fill();
@@ -1130,6 +1393,7 @@ function syncMatchControls() {
   const dial = $('speed-dial');
   if (dial) dial.value = save.speed;
   syncSpeedReadout();
+  document.querySelectorAll('.backdrop-pick').forEach(sel => { sel.value = save.backdrop; });
   setAutoCoach(!!(M && M.autoCoach));
 }
 
@@ -1144,6 +1408,15 @@ $('btn-autocoach').onclick = () => setAutoCoach(!(M && M.autoCoach));
   });
   syncSpeedReadout();
 }
+document.querySelectorAll('.backdrop-pick').forEach(sel => {
+  BACKDROPS.forEach(([value, label]) => sel.add(new Option(label, value)));
+  sel.value = save.backdrop;
+  sel.addEventListener('change', () => {
+    save.backdrop = sel.value; persist();
+    document.querySelectorAll('.backdrop-pick').forEach(o => { o.value = sel.value; });
+    if (M && M.phase !== 'ended') M.bg = [buildStadium(0), buildStadium(1)];  // live switch
+  });
+});
 $('btn-start').onclick = () => {
   if (save.teamId) { renderManage(); show('screen-manage'); }
   else { renderSelect(); show('screen-select'); }

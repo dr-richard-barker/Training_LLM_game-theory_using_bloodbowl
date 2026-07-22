@@ -45,6 +45,12 @@
       </div>
       <div id="roster" class="roster"></div>
       <div class="row">
+        <div class="dial" title="Choose the scenery surrounding the stadium">
+          <label for="backdrop-pick-manage">ARENA BACKDROP</label>
+          <select id="backdrop-pick-manage" class="backdrop-pick" aria-label="Stadium backdrop"></select>
+        </div>
+      </div>
+      <div class="row">
         <button class="btn" id="btn-back-select">◄ CHANGE TEAM</button>
         <button class="btn" id="btn-league">LEAGUE TABLE</button>
         <button class="btn big" id="btn-play">PLAY NEXT MATCH ►</button>
@@ -80,6 +86,10 @@
         <label for="speed-dial">SPEED</label>
         <input type="range" id="speed-dial" min="0.5" max="4" step="0.5" value="1" aria-label="Match speed and length">
         <span id="speed-readout">1.0× · ~3:00</span>
+      </div>
+      <div class="dial" title="Choose the scenery surrounding the stadium">
+        <label for="backdrop-pick-match">ARENA</label>
+        <select id="backdrop-pick-match" class="backdrop-pick" aria-label="Stadium backdrop"></select>
       </div>
     </div>
     <div id="controls-help">
