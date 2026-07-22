@@ -9,7 +9,7 @@ const SAVE_KEY = 'brutalbowl_save_v1';
 
 function defaultSave() {
   return { teamId: null, credits: 20, upgrades: {}, results: [], round: 0,
-           speed: 1, autoCoach: false, backdrop: 'steel' };
+           speed: 1, autoCoach: false, backdrop: 'steel', sound: true };
 }
 let save = loadSave();
 function loadSave() {
@@ -20,6 +20,7 @@ function loadSave() {
       if (typeof s.speed !== 'number' || !isFinite(s.speed)) s.speed = 1;
       s.autoCoach = !!s.autoCoach;
       if (typeof s.backdrop !== 'string') s.backdrop = 'steel';
+      s.sound = s.sound !== false;
       return s;
     }
   } catch (e) { /* corrupted save -> start fresh */ }
@@ -288,7 +289,9 @@ function startMatch() {
     autoCoach: !!save.autoCoach,
   };
   M.players.forEach(p => { p.sprite = makeSprite(p.kind, M.kits[p.side], p.r); });
-  M.bg = [buildStadium(0), buildStadium(1)];
+  M.bg = buildStadium();
+  ensureAudio();                      // reached via the Play click — allowed to start audio
+  setCrowd(0.04, 1.5);
   M.active = nearestPlayer(0, M.ball);
   $('hud-home').textContent = userTeam.name;
   $('hud-away').textContent = oppTeam.name;
@@ -329,6 +332,107 @@ function nearestPlayer(side, pos, excludeDown = true) {
     if (d < bd) { bd = d; best = p; }
   }
   return best;
+}
+
+/* ---------- sound (all synthesized — no audio files) ---------- */
+let AC = null, crowdGain = null, noiseCache = null;
+
+function noiseBuf(ac) {
+  if (!noiseCache) {
+    const len = 2 * ac.sampleRate;
+    noiseCache = ac.createBuffer(1, len, ac.sampleRate);
+    const d = noiseCache.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
+  return noiseCache;
+}
+
+function ensureAudio() {              // must be first reached via a user gesture
+  if (!save.sound) return null;
+  if (!AC) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    AC = new Ctx();
+    const src = AC.createBufferSource();       // ambient crowd bed
+    src.buffer = noiseBuf(AC); src.loop = true;
+    const bp = AC.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 650; bp.Q.value = 0.5;
+    crowdGain = AC.createGain(); crowdGain.gain.value = 0;
+    src.connect(bp); bp.connect(crowdGain); crowdGain.connect(AC.destination);
+    src.start();
+  }
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+
+function setCrowd(level, ramp) {      // ambient loudness; goals swell it, full time fades it
+  const ac = ensureAudio(); if (!ac || !crowdGain) return;
+  const g = crowdGain.gain, t = ac.currentTime;
+  g.cancelScheduledValues(t); g.setValueAtTime(g.value, t);
+  g.linearRampToValueAtTime(level, t + (ramp || 0.5));
+}
+
+function sfxTackle() {                // meaty thud: noise crunch + falling body-drum
+  const ac = ensureAudio(); if (!ac) return;
+  const t = ac.currentTime;
+  const n = ac.createBufferSource(); n.buffer = noiseBuf(ac);
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 850;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0.4, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+  n.connect(lp); lp.connect(g); g.connect(ac.destination);
+  n.start(t); n.stop(t + 0.18);
+  const o = ac.createOscillator(); o.type = 'sine';
+  o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+  const g2 = ac.createGain();
+  g2.gain.setValueAtTime(0.45, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  o.connect(g2); g2.connect(ac.destination);
+  o.start(t); o.stop(t + 0.2);
+}
+
+function sfxGoal() {                  // two-tone stadium horn + the crowd erupting
+  const ac = ensureAudio(); if (!ac) return;
+  const t = ac.currentTime;
+  for (const [f0, f1, dt0] of [[196, 262, 0], [147, 196, 0.12]]) {
+    const o = ac.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(f0, t + dt0);
+    o.frequency.linearRampToValueAtTime(f1, t + dt0 + 0.28);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t + dt0);
+    g.gain.linearRampToValueAtTime(0.16, t + dt0 + 0.04);
+    g.gain.setValueAtTime(0.16, t + dt0 + 0.5);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dt0 + 0.9);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t + dt0); o.stop(t + dt0 + 1);
+  }
+  setCrowd(0.2, 0.1);                                   // roar…
+  if (crowdGain) crowdGain.gain.linearRampToValueAtTime(0.04, ac.currentTime + 3); // …then settle
+}
+
+function sfxWhistle(blasts) {         // referee: 1 blast = kickoff/half, 2 = full time
+  const ac = ensureAudio(); if (!ac) return;
+  for (let i = 0; i < (blasts || 1); i++) {
+    const t = ac.currentTime + i * 0.3;
+    const o = ac.createOscillator(); o.type = 'square';
+    o.frequency.setValueAtTime(2350, t);
+    o.frequency.setValueAtTime(2100, t + 0.09);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0.08, t);
+    g.gain.setValueAtTime(0.08, t + 0.16);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t); o.stop(t + 0.22);
+  }
+}
+
+function setSound(on) {
+  save.sound = !!on; persist();
+  const b = $('btn-sound');
+  if (b) { b.textContent = 'SOUND: ' + (on ? 'ON' : 'OFF'); b.classList.toggle('on', on); }
+  if (!on && AC) AC.suspend();
+  else if (on && (AC || M)) {        // only start audio once a user gesture has occurred
+    ensureAudio();
+    if (M && M.phase !== 'ended') setCrowd(0.04, 0.5);
+  }
 }
 
 /* ---------- user actions ---------- */
@@ -457,13 +561,15 @@ function step(dt) {
       if (M.phase !== 'kickoff') resetPositions();
       M.phase = M.phase === 'kickoff' ? 'play' : 'kickoff';
       if (M.phase === 'kickoff') M.phaseT = 1.2;
+      else sfxWhistle(1);                       // play resumes
     }
     if (M.phase !== 'play') { draw(); return; }
   }
 
   M.clock -= dt;
   if (M.clock <= 0) {
-    if (M.half === 1) { M.phase = 'halftime'; M.phaseT = 2.5; ticker('HALF TIME'); updateHud(); return; }
+    if (M.half === 1) { M.phase = 'halftime'; M.phaseT = 2.5; ticker('HALF TIME');
+      sfxWhistle(1); updateHud(); return; }
     endMatch(); return;
   }
 
@@ -556,6 +662,7 @@ function tryTackle(tackler, victim) {
   prob = clamp(prob, 0.12, 0.9);
   if (Math.random() < prob) {
     dropBall(victim, true);
+    sfxTackle();
     victim.down = clamp(3.4 - victim.to * 0.25, 0.8, 3);
     if (tackler.st - victim.to >= -2 && Math.random() < 0.08) {
       victim.out = true;
@@ -570,6 +677,7 @@ function tryTackle(tackler, victim) {
 
 function scoreGoal(side) {
   M.score[side] += 10;
+  sfxGoal();
   M.phase = 'goal'; M.phaseT = 1.8;
   ticker(side === 0 ? 'GOAL!! +10' : 'GOAL FOR ' + M.teams[1].name.toUpperCase());
   updateHud();
@@ -578,6 +686,8 @@ function scoreGoal(side) {
 
 function endMatch() {
   M.phase = 'ended';
+  sfxWhistle(2);
+  setCrowd(0, 2);
   const [hs, as] = M.score;
   const win = hs > as, drawGame = hs === as;
   const creditsEarned = (win ? 30 : drawGame ? 15 : 5) + hs / 10 * 2;
@@ -1096,8 +1206,8 @@ function drawBackdrop(s, style, teams) {
   }
 }
 
-/* ---------- stadium art ---------- */
-function buildStadium(variant) {
+/* ---------- stadium art (built once per match — a static scene) ---------- */
+function buildStadium() {
   const cw = W + 2 * MARGIN, ch = H + 2 * MARGIN;
   const c = document.createElement('canvas');
   c.width = cw * RES; c.height = ch * RES;
@@ -1118,7 +1228,7 @@ function buildStadium(variant) {
     s.lineWidth = 10;
     s.strokeRect(-inset, -inset, W + 2 * inset, H + 2 * inset);
   }
-  // crowd (each build differs -> alternating the two frames animates the crowd)
+  // crowd
   const grey = save.backdrop === 'greyscale';
   const palette = grey
     ? ['#c9c9ce', '#9a9aa2', '#6e6e76', '#4a4a52', '#e2e2e6', '#84848c']
@@ -1276,14 +1386,7 @@ function buildStadium(variant) {
 function draw() {
   const B = M.ball;
   cx.setTransform(RES, 0, 0, RES, MARGIN * RES, MARGIN * RES);
-  const flick = M.phase === 'goal' ? 120 : 700;                // crowd goes wild on goals
-  const bg = M.bg[Math.floor(performance.now() / flick) % 2];
-  cx.drawImage(bg, -MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
-
-  if (M.phase === 'goal') {                                     // celebration flash
-    cx.fillStyle = 'rgba(255,240,200,' + (0.12 * Math.max(0, M.phaseT - 0.6)).toFixed(3) + ')';
-    cx.fillRect(-MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
-  }
+  cx.drawImage(M.bg, -MARGIN, -MARGIN, W + 2 * MARGIN, H + 2 * MARGIN);
 
   // players back-to-front so the big guys overlap naturally
   const ps = M.players.filter(p => !p.out).sort((a, b) => (a.y - b.y) || (b.r - a.r));
@@ -1394,11 +1497,15 @@ function syncMatchControls() {
   if (dial) dial.value = save.speed;
   syncSpeedReadout();
   document.querySelectorAll('.backdrop-pick').forEach(sel => { sel.value = save.backdrop; });
+  const sb = $('btn-sound');
+  if (sb) { sb.textContent = 'SOUND: ' + (save.sound ? 'ON' : 'OFF'); sb.classList.toggle('on', save.sound); }
   setAutoCoach(!!(M && M.autoCoach));
 }
 
 /* ---------- wiring ---------- */
 $('btn-autocoach').onclick = () => setAutoCoach(!(M && M.autoCoach));
+$('btn-sound').onclick = () => setSound(!save.sound);
+setSound(save.sound);
 {
   const dial = $('speed-dial');
   dial.value = save.speed;
@@ -1414,7 +1521,7 @@ document.querySelectorAll('.backdrop-pick').forEach(sel => {
   sel.addEventListener('change', () => {
     save.backdrop = sel.value; persist();
     document.querySelectorAll('.backdrop-pick').forEach(o => { o.value = sel.value; });
-    if (M && M.phase !== 'ended') M.bg = [buildStadium(0), buildStadium(1)];  // live switch
+    if (M && M.phase !== 'ended') M.bg = buildStadium();   // rebuild only on user choice
   });
 });
 $('btn-start').onclick = () => {

@@ -131,7 +131,8 @@ html, body {
 
 /* auto-coach + speed dial */
 #match-controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: center; margin-top: 10px; }
-#btn-autocoach { margin: 0; }
+#btn-autocoach, #btn-sound { margin: 0; }
+#btn-sound.on,
 #btn-autocoach.on {
   color: #08222a;
   background: linear-gradient(180deg, #7ff0ff 0%, #2aa7b8 48%, #1b7c8a 55%, #59d6e6 100%);
