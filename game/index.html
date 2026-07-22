@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brutal Bowl Arena — the league game</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- TITLE -->
+  <section id="screen-title" class="screen active">
+    <div class="chrome-panel title-panel">
+      <h1 class="chrome-text">BRUTAL BOWL</h1>
+      <h2 class="chrome-sub">ARENA</h2>
+      <p class="subtitle">A future-sport league of the eight great teams.<br>
+      Steel walls. No fouls. No mercy.</p>
+      <button class="btn big" id="btn-start">ENTER THE ARENA</button>
+      <button class="btn" id="btn-reset-save">RESET SEASON</button>
+      <p class="footnote">An original fan-made arcade game for the
+      <a href="../">Blood Bowl × Game Theory League</a>.</p>
+    </div>
+  </section>
+
+  <!-- TEAM SELECT -->
+  <section id="screen-select" class="screen">
+    <div class="chrome-panel">
+      <h2 class="chrome-sub">SELECT YOUR TEAM</h2>
+      <div id="team-grid" class="team-grid"></div>
+    </div>
+  </section>
+
+  <!-- MANAGE / GYM -->
+  <section id="screen-manage" class="screen">
+    <div class="chrome-panel">
+      <div class="manage-head">
+        <img id="manage-img" alt="team art">
+        <div>
+          <h2 id="manage-title" class="chrome-sub"></h2>
+          <p id="manage-lore" class="subtitle"></p>
+          <p class="credits">CREDITS: <span id="manage-credits"></span> ⛁
+            <span class="hint">(+1 stat costs 10 — earned by winning matches)</span></p>
+        </div>
+      </div>
+      <div id="roster" class="roster"></div>
+      <div class="row">
+        <button class="btn" id="btn-back-select">◄ CHANGE TEAM</button>
+        <button class="btn" id="btn-league">LEAGUE TABLE</button>
+        <button class="btn big" id="btn-play">PLAY NEXT MATCH ►</button>
+      </div>
+      <p id="next-fixture" class="subtitle"></p>
+    </div>
+  </section>
+
+  <!-- LEAGUE -->
+  <section id="screen-league" class="screen">
+    <div class="chrome-panel">
+      <h2 class="chrome-sub">LEAGUE TABLE</h2>
+      <table id="league-table" class="league-table"></table>
+      <div class="row">
+        <button class="btn" id="btn-back-manage">◄ BACK</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATCH -->
+  <section id="screen-match" class="screen">
+    <div id="hud">
+      <span id="hud-home"></span>
+      <span id="hud-score">0 — 0</span>
+      <span id="hud-away"></span>
+      <span id="hud-clock">1st 90</span>
+    </div>
+    <canvas id="pitch" width="640" height="960"></canvas>
+    <div id="ticker"></div>
+    <div id="controls-help">
+      MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player
+    </div>
+  </section>
+
+  <!-- POST MATCH -->
+  <section id="screen-post" class="screen">
+    <div class="chrome-panel">
+      <h2 class="chrome-sub" id="post-title">FULL TIME</h2>
+      <p id="post-score" class="post-score"></p>
+      <p id="post-detail" class="subtitle"></p>
+      <div class="row">
+        <button class="btn" id="btn-post-league">LEAGUE TABLE</button>
+        <button class="btn big" id="btn-post-continue">CONTINUE ►</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script src="teams.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

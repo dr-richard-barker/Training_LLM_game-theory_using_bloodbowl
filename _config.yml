@@ -1,0 +1,12 @@
+title: "Blood Bowl × Game Theory League"
+description: "Exploring the use of LLMs to design and assist with playing board games like Blood Bowl — teams, star players, stadiums, and a playable arcade arena game."
+theme: jekyll-theme-cayman
+
+# GitBook assets live in a dot-folder, which Jekyll would otherwise skip
+include:
+  - ".gitbook"
+
+exclude:
+  - "how-to-roll-2-dice-in-python.ipynb"
+  - "Markdown_Guide.ipynb"
+  - "LICENSE"
