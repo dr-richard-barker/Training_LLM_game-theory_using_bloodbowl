@@ -192,3 +192,50 @@ html, body {
   animation: keypulse 0.9s ease-in-out infinite alternate;
 }
 @keyframes keypulse { from { filter: brightness(1); } to { filter: brightness(1.45); } }
+
+/* on-screen touch controls (shown on coarse pointers / after a touch) */
+#touch-controls { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 30; }
+/* on touch layouts the settings bar moves above the pitch, so the bottom of
+   the screen belongs to the canvas + floating controls */
+body.touch #screen-match.active #touch-controls { display: block; }
+body.touch #screen-match.active #hud { order: -3; }
+body.touch #screen-match.active #match-controls { order: -2; margin: 0 0 8px; }
+body.touch #screen-match.active #controls-help { display: none; }
+@media (pointer: coarse) {
+  #screen-match.active #touch-controls { display: block; }
+  #screen-match.active #hud { order: -3; }
+  #screen-match.active #match-controls { order: -2; margin: 0 0 8px; }
+  #screen-match.active #controls-help { display: none; }
+}
+#joystick {
+  position: absolute; left: 16px; bottom: 20px; width: 132px; height: 132px;
+  border-radius: 50%; pointer-events: auto; touch-action: none;
+  background: radial-gradient(circle at 50% 40%, rgba(70,83,106,.45), rgba(20,24,31,.55));
+  border: 2px solid rgba(125,140,166,.55);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5);
+}
+#joy-knob {
+  position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 34% 30%, #eaf6ff 0%, #59d6e6 55%, #227f8c 100%);
+  border: 2px solid #0a0d12; box-shadow: 0 3px 8px rgba(0,0,0,.6);
+  will-change: transform;
+}
+#touch-buttons {
+  position: absolute; right: 14px; bottom: 20px; pointer-events: auto;
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-end;
+}
+.tbtn {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0; padding: 0;
+  font: inherit; font-size: .58rem; line-height: 1.25; text-transform: uppercase;
+  color: var(--chrome-hi); cursor: pointer; touch-action: none; opacity: .88;
+  background: linear-gradient(180deg, #5a6d8c 0%, #33405a 45%, #222c40 55%, #3a4a66 100%);
+  border: 2px solid; border-color: #aebcd6 #1a2028 #12161e #aebcd6;
+  box-shadow: 0 3px 0 #0a0d12, inset 0 1px 0 rgba(255,255,255,.3);
+}
+.tbtn:active { transform: translateY(2px) scale(.96); filter: brightness(1.3); }
+.tbtn.tbig {
+  width: 94px; height: 94px; font-size: .66rem; color: #101418;
+  background: linear-gradient(180deg, #ffe9b0 0%, #d9a441 45%, #a8752a 55%, #e6b95a 100%);
+  border-color: #fff2cc #6b4a15 #59400f #fff2cc;
+}

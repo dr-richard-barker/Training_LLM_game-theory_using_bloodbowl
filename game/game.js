@@ -584,6 +584,7 @@ function step(dt) {
     const K = save.keys;
     let dx = (keys['arrowright'] || keys[K.right] ? 1 : 0) - (keys['arrowleft'] || keys[K.left] ? 1 : 0);
     let dy = (keys['arrowdown'] || keys[K.down] ? 1 : 0) - (keys['arrowup'] || keys[K.up] ? 1 : 0);
+    if (!dx && !dy && touchDir.active) { dx = touchDir.x; dy = touchDir.y; }
     const max = (1.6 + a.sp * 0.28) * (a.lunge > 0 ? 1.9 : 1);
     if (dx || dy) {
       const n = Math.hypot(dx, dy);
@@ -1475,6 +1476,56 @@ function loop(t) {
 
 /* debug/testing hook: step the sim manually from the console */
 window.__bb = { step: dt => step(dt), state: () => M, save: () => save };
+
+/* ---------- on-screen touch controls ---------- */
+const touchDir = { x: 0, y: 0, active: false };
+
+(function initTouch() {
+  const joy = $('joystick'), knob = $('joy-knob');
+  if (!joy) return;
+  // reveal on real touch use (CSS also shows on coarse pointers); ?touch=1 forces it
+  addEventListener('touchstart', () => document.body.classList.add('touch'),
+    { once: true, passive: true });
+  if (new URLSearchParams(location.search).has('touch')) document.body.classList.add('touch');
+
+  let pid = null;
+  const setKnob = (x, y) => { knob.style.transform = `translate(${x}px, ${y}px)`; };
+  const release = e => {
+    if (pid === null || (e && e.pointerId !== pid)) return;
+    pid = null; touchDir.active = false; touchDir.x = touchDir.y = 0; setKnob(0, 0);
+  };
+  const track = e => {
+    const r = joy.getBoundingClientRect();
+    let dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+    let dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+    const m = Math.hypot(dx, dy);
+    if (m > 1) { dx /= m; dy /= m; }
+    setKnob(dx * r.width * 0.3, dy * r.height * 0.3);
+    const dead = m < 0.22;
+    touchDir.active = !dead;
+    touchDir.x = dead ? 0 : dx;
+    touchDir.y = dead ? 0 : dy;
+  };
+  joy.addEventListener('pointerdown', e => {
+    e.preventDefault(); pid = e.pointerId;
+    try { joy.setPointerCapture(pid); } catch (err) { /* synthetic events */ }
+    track(e);
+  });
+  joy.addEventListener('pointermove', e => { if (e.pointerId === pid) track(e); });
+  joy.addEventListener('pointerup', release);
+  joy.addEventListener('pointercancel', release);
+
+  const bind = (id, fn) => {
+    const b = $(id);
+    b.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      if (M && M.phase === 'play' && !M.autoCoach) fn();
+    });
+  };
+  bind('tb-action', actionKey);
+  bind('tb-shoot', shootKey);
+  bind('tb-switch', switchKey);
+})();
 
 /* ---------- how to play / key bindings ---------- */
 const KEY_ACTIONS = [

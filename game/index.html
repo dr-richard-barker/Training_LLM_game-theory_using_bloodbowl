@@ -101,6 +101,8 @@
           <h3 class="binds-title">Controls <span class="hint">(click a key to change it — ESC cancels)</span></h3>
           <div id="keybinds" class="keybinds"></div>
           <p class="hint">The arrow keys always steer, whatever else you bind.</p>
+          <p class="hint">On phones and tablets a joystick and action buttons
+          appear on screen during matches — no keyboard needed.</p>
         </div>
       </div>
       <div class="row">
@@ -135,6 +137,14 @@
     </div>
     <div id="controls-help">
       MOVE: WASD / arrows · SPACE: pass / tackle · X: shoot · C: switch player · P: auto coach
+    </div>
+    <div id="touch-controls" aria-hidden="true">
+      <div id="joystick"><div id="joy-knob"></div></div>
+      <div id="touch-buttons">
+        <button id="tb-switch" class="tbtn">SWAP</button>
+        <button id="tb-shoot" class="tbtn">SHOOT</button>
+        <button id="tb-action" class="tbtn tbig">PASS·<br>TACKLE</button>
+      </div>
     </div>
   </section>
 
